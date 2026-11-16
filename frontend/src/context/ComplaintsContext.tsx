@@ -101,8 +101,13 @@ export const ComplaintsProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Initial load when user mounts
   useEffect(() => {
+    if (!user) {
+      setComplaints([]);
+      setError(null);
+      return;
+    }
     refreshComplaints();
-  }, [refreshComplaints]);
+  }, [refreshComplaints, user]);
 
   // Immediately inject newly submitted complaint into state and cache
   const addSubmittedComplaint = useCallback((newComplaint: Complaint) => {

@@ -120,7 +120,7 @@ const REAL_LIFE_SCENARIOS: RealLifeScenario[] = [
 export const ModelEvaluationPage: React.FC = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-  const { isMobileMode } = useDisplayMode();
+  const isMobileMode = false;
   const navigate = useNavigate();
 
   const [modelInfo, setModelInfo] = useState<any>(null);
@@ -216,7 +216,7 @@ export const ModelEvaluationPage: React.FC = () => {
   };
 
   const handleCopySummary = () => {
-    const summary = `ComplainAI ML Telemetry Summary:
+    const summary = `ResolveX-AI ML Telemetry Summary:
 • Model Architecture: TF-IDF (1,2-ngrams, sublinear_tf) + Logistic Regression (C=2.0, class_weight='balanced')
 • Test Set Accuracy: ${(modelInfo?.metrics?.accuracy * 100 || 99).toFixed(1)}%
 • Macro F1-Score: ${(modelInfo?.metrics?.macro_f1 || 0.99).toFixed(3)}
@@ -244,16 +244,16 @@ export const ModelEvaluationPage: React.FC = () => {
   return (
     <div className={`${isMobileMode ? 'w-full px-3.5 py-4 space-y-6' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10'}`}>
       {/* Top Hero Banner */}
-      <div className={`bg-gradient-to-br from-[#F0E9FF] via-white to-[#E8F1FF] dark:from-[#0F1530] dark:via-[#151D38] dark:to-[#090D1E] rounded-3xl border border-violet-200/90 dark:border-white/10 shadow-card-light dark:shadow-card-dark ${
+      <div className={`bg-primaryViolet rounded-2xl border border-slate-200 dark:border-white/10   ${
         isMobileMode ? 'p-4 sm:p-5 space-y-3' : 'p-6 sm:p-8 space-y-4'
       }`}>
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs uppercase font-mono font-bold px-3 py-1 rounded-full bg-violet-200/90 dark:bg-violet-900/40 text-primaryViolet dark:text-cyan-300 border border-violet-300 dark:border-violet-700/60 shadow-2xs">
+            <span className="text-xs uppercase font-mono font-medium px-3 py-1 rounded-full bg-violet-200/90 dark:bg-slate-800 text-primaryViolet dark:text-cyan-300 border border-slate-200 dark:border-slate-700 shadow-2xs">
               Scikit-Learn 1.5.0 Production Pipeline
             </span>
             <span className="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500 " />
               Stratified Held-Out Test Set (80/20)
             </span>
           </div>
@@ -261,7 +261,7 @@ export const ModelEvaluationPage: React.FC = () => {
           <button
             type="button"
             onClick={handleCopySummary}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#171F3B] hover:bg-slate-100 dark:hover:bg-[#1E294B] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-white/10 shadow-2xs transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#1A2029] hover:bg-slate-100 dark:hover:bg-[#1E294B] text-slate-700 dark:text-slate-200 text-xs font-medium border border-slate-200 dark:border-white/10 shadow-2xs transition-colors cursor-pointer"
           >
             {copiedReport ? <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-mintGreen" /> : <Copy className="w-3.5 h-3.5 text-primaryViolet dark:text-darkCyan" />}
             <span>{copiedReport ? 'Telemetry Copied!' : 'Export Telemetry Card'}</span>
@@ -269,16 +269,16 @@ export const ModelEvaluationPage: React.FC = () => {
         </div>
 
         <div className="space-y-1">
-          <h1 className={`font-black text-[#172033] dark:text-[#F8FAFC] tracking-tight ${isMobileMode ? 'text-2xl' : 'text-3xl sm:text-4xl'}`}>
+          <h1 className={`font-medium text-[#172337] dark:text-[#F8FAFC] tracking-tight ${isMobileMode ? 'text-2xl' : 'text-3xl sm:text-4xl'}`}>
             Machine Learning Intelligence & Evaluation Lab
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-4xl leading-relaxed">
-            ComplainAI couples a high-speed <strong>TF-IDF vectorizer + Multinomial Logistic Regression</strong> classification model with an audited <strong>Deterministic Urgency Scoring Engine</strong>. Explore live class probabilities, inspect mathematical feature token attribution, test real-life campus scenarios, and review the academic viva defense foundation.
+            ResolveX-AI couples a high-speed <strong>TF-IDF vectorizer + Multinomial Logistic Regression</strong> classification model with an audited <strong>Deterministic Urgency Scoring Engine</strong>. Explore live class probabilities, inspect mathematical feature token attribution, test real-life campus scenarios, and review the academic viva defense foundation.
           </p>
         </div>
 
         {/* Feature Highlights Pills */}
-        <div className="flex items-center gap-2 flex-wrap pt-1 text-[11px] font-bold">
+        <div className="flex items-center gap-2 flex-wrap pt-1 text-[11px] font-medium">
           <span className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-mintGreen/15 text-emerald-800 dark:text-mintGreen border border-emerald-200 dark:border-mintGreen/40 flex items-center gap-1">
             <Zap className="w-3 h-3 text-emerald-600 dark:text-mintGreen" />
             &lt; 4ms CPU Inference (Zero GPU Cost)
@@ -287,7 +287,7 @@ export const ModelEvaluationPage: React.FC = () => {
             <ShieldCheck className="w-3 h-3 text-brightBlue dark:text-darkCyan" />
             Deterministic Life-Safety Floor Guaranteed
           </span>
-          <span className="px-2.5 py-1 rounded-lg bg-violet-50 dark:bg-primaryViolet/15 text-violet-800 dark:text-darkPurple border border-violet-200 dark:border-primaryViolet/40 flex items-center gap-1">
+          <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-100 dark:bg-slate-800/15 text-blue-700 dark:text-darkPurple border border-slate-200 dark:border-primaryViolet/40 flex items-center gap-1">
             <Code2 className="w-3 h-3 text-primaryViolet dark:text-darkPurple" />
             100% Mathematically Explainable Coefficients
           </span>
@@ -296,33 +296,33 @@ export const ModelEvaluationPage: React.FC = () => {
 
       {/* Top Headline Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#171F3B] border border-violet-100 dark:border-white/10 shadow-card-light dark:shadow-card-dark space-y-1">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-primaryViolet dark:text-darkPurple">Overall Test Accuracy</div>
-          <div className="text-3xl sm:text-4xl font-black text-[#172033] dark:text-[#F8FAFC]">
+        <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#1A2029] border border-slate-200 dark:border-white/10   space-y-1">
+          <div className="text-[11px] font-medium uppercase tracking-wider text-primaryViolet dark:text-darkPurple">Overall Test Accuracy</div>
+          <div className="text-3xl sm:text-4xl font-medium text-[#172337] dark:text-[#F8FAFC]">
             {((modelInfo?.metrics?.accuracy || 0.99) * 100).toFixed(1)}%
           </div>
           <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Stratified 100-sample test set</div>
         </div>
 
-        <div className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#171F3B] border border-emerald-100 dark:border-white/10 shadow-card-light dark:shadow-card-dark space-y-1">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-darkMint">Macro F1-Score</div>
-          <div className="text-3xl sm:text-4xl font-black text-emerald-600 dark:text-darkMint">
+        <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#1A2029] border border-emerald-100 dark:border-white/10   space-y-1">
+          <div className="text-[11px] font-medium uppercase tracking-wider text-emerald-700 dark:text-darkMint">Macro F1-Score</div>
+          <div className="text-3xl sm:text-4xl font-medium text-emerald-600 dark:text-darkMint">
             {(modelInfo?.metrics?.macro_f1 || 0.99).toFixed(3)}
           </div>
           <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Harmonic mean across 10 classes</div>
         </div>
 
-        <div className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#171F3B] border border-blue-100 dark:border-white/10 shadow-card-light dark:shadow-card-dark space-y-1">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-brightBlue dark:text-darkCyan">Inference Latency</div>
-          <div className="text-3xl sm:text-4xl font-black text-[#172033] dark:text-[#F8FAFC]">
+        <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#1A2029] border border-blue-100 dark:border-white/10   space-y-1">
+          <div className="text-[11px] font-medium uppercase tracking-wider text-brightBlue dark:text-darkCyan">Inference Latency</div>
+          <div className="text-3xl sm:text-4xl font-medium text-[#172337] dark:text-[#F8FAFC]">
             &lt; 4 ms
           </div>
           <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Local single-threaded CPU runtime</div>
         </div>
 
-        <div className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#171F3B] border border-amber-100 dark:border-white/10 shadow-card-light dark:shadow-card-dark space-y-1">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-darkAmber">Dataset Volume</div>
-          <div className="text-3xl sm:text-4xl font-black text-amber-600 dark:text-darkAmber">
+        <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#1A2029] border border-amber-100 dark:border-white/10   space-y-1">
+          <div className="text-[11px] font-medium uppercase tracking-wider text-amber-700 dark:text-darkAmber">Dataset Volume</div>
+          <div className="text-3xl sm:text-4xl font-medium text-amber-600 dark:text-darkAmber">
             {modelInfo?.dataset?.total_samples || 500}
           </div>
           <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
@@ -332,55 +332,55 @@ export const ModelEvaluationPage: React.FC = () => {
       </div>
 
       {/* End-to-End Pipeline Architecture Flowchart */}
-      <div className="bg-white dark:bg-[#171F3B] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-card-light dark:shadow-card-dark p-6 sm:p-8 space-y-4">
+      <div className="bg-white dark:bg-[#1A2029] rounded-2xl border border-slate-200/90 dark:border-white/10   p-6 sm:p-8 space-y-4">
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-3 flex-wrap gap-2">
           <div className="flex items-center gap-2">
             <Layers className="w-5 h-5 text-primaryViolet dark:text-darkCyan" />
-            <h3 className="text-base font-black text-[#172033] dark:text-[#F8FAFC]">
+            <h3 className="text-base font-medium text-[#172337] dark:text-[#F8FAFC]">
               End-to-End NLP & Decision Intelligence Architecture
             </h3>
           </div>
-          <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 font-bold">
+          <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 font-medium">
             Deterministic + Probabilistic Hybrid System
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3 pt-1">
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200/90 dark:border-white/5 space-y-1.5 shadow-2xs">
-            <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Stage 1</div>
-            <div className="font-extrabold text-xs text-[#172033] dark:text-[#F8FAFC]">Text Normalization</div>
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200/90 dark:border-white/5 space-y-1.5 shadow-2xs">
+            <div className="text-[10px] font-medium uppercase tracking-wider text-slate-400">Stage 1</div>
+            <div className="font-medium text-xs text-[#172337] dark:text-[#F8FAFC]">Text Normalization</div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
               Regex cleanup, case folding, and campus domain keyword salience weighting.
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-violet-50/60 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800/40 space-y-1.5 shadow-2xs">
-            <div className="text-[10px] font-extrabold uppercase tracking-wider text-primaryViolet dark:text-darkCyan">Stage 2</div>
-            <div className="font-extrabold text-xs text-[#172033] dark:text-[#F8FAFC]">TF-IDF Vectorization</div>
+          <div className="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1.5 shadow-2xs">
+            <div className="text-[10px] font-medium uppercase tracking-wider text-primaryViolet dark:text-darkCyan">Stage 2</div>
+            <div className="font-medium text-xs text-[#172337] dark:text-[#F8FAFC]">TF-IDF Vectorization</div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
               Unigram + bigram ngram range (1,2) with sublinear TF scaling across 5,000 features.
             </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/40 space-y-1.5 shadow-2xs">
-            <div className="text-[10px] font-extrabold uppercase tracking-wider text-brightBlue dark:text-darkCyan">Stage 3</div>
-            <div className="font-extrabold text-xs text-[#172033] dark:text-[#F8FAFC]">Logistic Regression</div>
+            <div className="text-[10px] font-medium uppercase tracking-wider text-brightBlue dark:text-darkCyan">Stage 3</div>
+            <div className="font-medium text-xs text-[#172337] dark:text-[#F8FAFC]">Logistic Regression</div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
               Multinomial probability calibration with balanced weights across 10 classes.
             </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 space-y-1.5 shadow-2xs">
-            <div className="text-[10px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-darkAmber">Stage 4</div>
-            <div className="font-extrabold text-xs text-[#172033] dark:text-[#F8FAFC]">Deterministic Safety Floor</div>
+            <div className="text-[10px] font-medium uppercase tracking-wider text-amber-600 dark:text-darkAmber">Stage 4</div>
+            <div className="font-medium text-xs text-[#172337] dark:text-[#F8FAFC]">Deterministic Safety Floor</div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
               Rule-based override for electrocution, fire exits, and toxic spills to prevent model under-scoring.
             </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-emerald-50/60 dark:bg-mintGreen/15 border border-emerald-200 dark:border-mintGreen/40 space-y-1.5 shadow-2xs">
-            <div className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-mintGreen">Stage 5</div>
-            <div className="font-extrabold text-xs text-[#172033] dark:text-[#F8FAFC]">Facility Triage & Dispatch</div>
+            <div className="text-[10px] font-medium uppercase tracking-wider text-emerald-700 dark:text-mintGreen">Stage 5</div>
+            <div className="font-medium text-xs text-[#172337] dark:text-[#F8FAFC]">Facility Triage & Dispatch</div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
               Automated division routing, duplicate ticket cosine matching, and audited lifecycle recording.
             </p>
@@ -389,10 +389,10 @@ export const ModelEvaluationPage: React.FC = () => {
       </div>
 
       {/* Interactive Live Inference Console & Real-Life Tester */}
-      <div className="bg-white dark:bg-[#171F3B] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-card-light dark:shadow-card-dark p-6 sm:p-8 space-y-6">
+      <div className="bg-white dark:bg-[#1A2029] rounded-2xl border border-slate-200/90 dark:border-white/10   p-6 sm:p-8 space-y-6">
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-4 flex-wrap gap-2">
           <div>
-            <div className="flex items-center gap-2 text-[#172033] dark:text-[#F8FAFC] font-black text-base sm:text-lg">
+            <div className="flex items-center gap-2 text-[#172337] dark:text-[#F8FAFC] font-medium text-base sm:text-lg">
               <Terminal className="w-5 h-5 text-brightBlue dark:text-darkCyan" />
               <span>Interactive Live Inference & Decision Lab</span>
             </div>
@@ -400,7 +400,7 @@ export const ModelEvaluationPage: React.FC = () => {
               Type any real-world campus issue or select a preset scenario to see full NLP classification, urgency scoring, and token attribution in real time.
             </p>
           </div>
-          <span className="font-mono text-[10px] px-2.5 py-1 rounded-md bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 font-bold border border-slate-200 dark:border-white/10">
+          <span className="font-mono text-[10px] px-2.5 py-1 rounded-md bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 font-medium border border-slate-200 dark:border-white/10">
             Real-Time Inference
           </span>
         </div>
@@ -408,7 +408,7 @@ export const ModelEvaluationPage: React.FC = () => {
         {/* Real-Life Scenarios Filter Tabs */}
         <div className="space-y-2.5">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-wider text-[11px]">
+            <span className="text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider text-[11px]">
               Select Real-Life Campus Scenario Presets:
             </span>
           </div>
@@ -419,7 +419,7 @@ export const ModelEvaluationPage: React.FC = () => {
                 key={cat}
                 type="button"
                 onClick={() => setSelectedScenarioCategory(cat)}
-                className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                className={`px-3 py-1 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
                   selectedScenarioCategory === cat
                     ? 'bg-primaryViolet text-white shadow-xs'
                     : 'bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300'
@@ -437,19 +437,19 @@ export const ModelEvaluationPage: React.FC = () => {
                 key={sc.id}
                 type="button"
                 onClick={() => handleSelectScenario(sc)}
-                className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-1 text-xs hover:border-primaryViolet dark:hover:border-cyan-400 ${
+                className={`p-3 rounded-2xl border text-left transition-colors cursor-pointer flex flex-col justify-between space-y-1 text-xs hover:border-primaryViolet dark:hover:border-cyan-400 ${
                   testTitle === sc.title
-                    ? 'bg-violet-50/80 dark:bg-violet-950/30 border-primaryViolet dark:border-cyan-400 shadow-2xs'
-                    : 'bg-slate-50 dark:bg-[#0F1530] border-slate-200 dark:border-white/5'
+                    ? 'bg-slate-100 dark:bg-slate-800 border-primaryViolet dark:border-cyan-400 shadow-2xs'
+                    : 'bg-slate-50 dark:bg-[#1A2029] border-slate-200 dark:border-white/5'
                 }`}
               >
                 <div className="flex items-center justify-between gap-1">
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white dark:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10">
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-white dark:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10">
                     {sc.badge}
                   </span>
                   <span className="text-[10px] text-slate-400 font-medium">Affects {sc.affected}</span>
                 </div>
-                <div className="font-extrabold text-[#172033] dark:text-[#F8FAFC] line-clamp-1">{sc.title}</div>
+                <div className="font-medium text-[#172337] dark:text-[#F8FAFC] line-clamp-1">{sc.title}</div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">{sc.desc}</div>
               </button>
             ))}
@@ -460,7 +460,7 @@ export const ModelEvaluationPage: React.FC = () => {
         <form onSubmit={handleSubmitForm} className="space-y-4 pt-2">
           <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
             <div className="sm:col-span-5 space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                 Complaint Title
               </label>
               <input
@@ -469,12 +469,12 @@ export const ModelEvaluationPage: React.FC = () => {
                 value={testTitle}
                 onChange={(e) => setTestTitle(e.target.value)}
                 placeholder="e.g. Broken water pipe leaking in basement"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-[#172033] dark:text-[#F8FAFC] font-bold focus:bg-white dark:focus:bg-[#151D38] focus:outline-none focus:border-primaryViolet dark:focus:border-cyan-400 shadow-2xs"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:bg-white dark:focus:bg-[#222A35] focus:outline-none focus:border-primaryViolet dark:focus:border-cyan-400 shadow-2xs"
               />
             </div>
 
             <div className="sm:col-span-7 space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                 Complaint Description
               </label>
               <input
@@ -483,12 +483,12 @@ export const ModelEvaluationPage: React.FC = () => {
                 value={testDescription}
                 onChange={(e) => setTestDescription(e.target.value)}
                 placeholder="e.g. Water is leaking from the main pipe and spreading onto corridor floor."
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-[#172033] dark:text-[#F8FAFC] font-medium focus:bg-white dark:focus:bg-[#151D38] focus:outline-none focus:border-primaryViolet dark:focus:border-cyan-400 shadow-2xs"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:bg-white dark:focus:bg-[#222A35] focus:outline-none focus:border-primaryViolet dark:focus:border-cyan-400 shadow-2xs"
               />
             </div>
 
             <div className="sm:col-span-6 space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                 Location
               </label>
               <input
@@ -496,12 +496,12 @@ export const ModelEvaluationPage: React.FC = () => {
                 value={testLocation}
                 onChange={(e) => setTestLocation(e.target.value)}
                 placeholder="e.g. Main Academic Block 2nd Floor"
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-[#172033] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-primaryViolet"
+                className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-primaryViolet"
               />
             </div>
 
             <div className="sm:col-span-3 space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                 Students Affected: <span className="text-primaryViolet dark:text-darkCyan">{testAffected}</span>
               </label>
               <input
@@ -510,12 +510,12 @@ export const ModelEvaluationPage: React.FC = () => {
                 max={1000}
                 value={testAffected}
                 onChange={(e) => setTestAffected(Number(e.target.value))}
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-[#172033] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-primaryViolet"
+                className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-primaryViolet"
               />
             </div>
 
             <div className="sm:col-span-3 space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                 Duration (Days): <span className="text-primaryViolet dark:text-darkCyan">{testDuration}</span>
               </label>
               <input
@@ -524,7 +524,7 @@ export const ModelEvaluationPage: React.FC = () => {
                 max={30}
                 value={testDuration}
                 onChange={(e) => setTestDuration(Number(e.target.value))}
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-[#172033] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-primaryViolet"
+                className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-primaryViolet"
               />
             </div>
           </div>
@@ -533,7 +533,7 @@ export const ModelEvaluationPage: React.FC = () => {
             <button
               type="submit"
               disabled={evaluating || !testTitle.trim() || !testDescription.trim()}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-primaryViolet to-brightBlue text-white font-bold text-xs shadow-glossy-light dark:shadow-neon-violet/30 disabled:opacity-50 transition-all hover:scale-102 cursor-pointer"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primaryViolet text-white font-medium text-xs   disabled:opacity-50 transition-colors  cursor-pointer"
             >
               <Send className="w-3.5 h-3.5" />
               <span>{evaluating ? 'Computing Multi-Class Probabilities...' : 'Run Pipeline Inference'}</span>
@@ -543,7 +543,7 @@ export const ModelEvaluationPage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleTransferToSubmit}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white dark:bg-[#151D38] hover:bg-slate-100 dark:hover:bg-[#1E294B] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-white/10 shadow-2xs transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white dark:bg-[#222A35] hover:bg-slate-100 dark:hover:bg-[#1E294B] text-slate-700 dark:text-slate-200 text-xs font-medium border border-slate-200 dark:border-white/10 shadow-2xs transition-colors cursor-pointer"
               >
                 <span>Transfer to Submit Complaint Form</span>
                 <ArrowRight className="w-3.5 h-3.5 text-primaryViolet dark:text-darkCyan" />
@@ -554,13 +554,13 @@ export const ModelEvaluationPage: React.FC = () => {
 
         {/* Real-Life Inference Output Display */}
         {testResult && (
-          <div className="p-6 rounded-3xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 shadow-2xs space-y-5 animate-in fade-in duration-200">
+          <div className="p-6 rounded-2xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 shadow-2xs space-y-5 animate-in fade-in duration-200">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3 flex-wrap gap-2">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
-                <Sparkles className="w-4 h-4 text-primaryViolet dark:text-darkCyan" />
+              <div className="flex items-center gap-2 text-xs font-medium text-slate-700 dark:text-slate-300">
+                <ShieldCheck className="w-4 h-4 text-primaryViolet dark:text-darkCyan" />
                 <span>Multi-Class Scikit-Learn Inference & Priority Output</span>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 dark:bg-mintGreen/20 text-emerald-800 dark:text-mintGreen font-bold">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 dark:bg-mintGreen/20 text-emerald-800 dark:text-mintGreen font-medium">
                 Computed in &lt; 4ms
               </span>
             </div>
@@ -568,26 +568,26 @@ export const ModelEvaluationPage: React.FC = () => {
             {/* Grid of Key Outputs */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
               {/* Category */}
-              <div className="p-4 rounded-2xl bg-white dark:bg-[#171F3B] border border-violet-200/80 dark:border-white/10 space-y-1 shadow-2xs">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+              <div className="p-4 rounded-2xl bg-white dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 space-y-1 shadow-2xs">
+                <span className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
                   Predicted Category
                 </span>
-                <div className="text-sm font-black text-primaryViolet dark:text-darkCyan">
+                <div className="text-sm font-medium text-primaryViolet dark:text-darkCyan">
                   {testResult.predicted_category}
                 </div>
-                <div className="font-mono text-[11px] text-slate-500 dark:text-slate-400 font-bold">
+                <div className="font-mono text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                   Confidence Score: {(testResult.confidence * 100).toFixed(1)}%
                 </div>
               </div>
 
               {/* Priority */}
-              <div className="p-4 rounded-2xl bg-white dark:bg-[#171F3B] border border-amber-200/80 dark:border-white/10 space-y-1 shadow-2xs">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+              <div className="p-4 rounded-2xl bg-white dark:bg-[#1A2029] border border-amber-200/80 dark:border-white/10 space-y-1 shadow-2xs">
+                <span className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
                   Safety Urgency Rating
                 </span>
                 <div className="flex items-center gap-2">
                   <PriorityBadge priority={priorityResult?.recommended_priority || 'High'} size="sm" />
-                  <span className="font-mono font-bold text-xs text-[#172033] dark:text-[#F8FAFC]">
+                  <span className="font-mono font-medium text-xs text-[#172337] dark:text-[#F8FAFC]">
                     ({priorityResult?.score ?? 75}/100)
                   </span>
                 </div>
@@ -597,11 +597,11 @@ export const ModelEvaluationPage: React.FC = () => {
               </div>
 
               {/* Assigned Division */}
-              <div className="p-4 rounded-2xl bg-white dark:bg-[#171F3B] border border-blue-200/80 dark:border-white/10 space-y-1 shadow-2xs">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+              <div className="p-4 rounded-2xl bg-white dark:bg-[#1A2029] border border-blue-200/80 dark:border-white/10 space-y-1 shadow-2xs">
+                <span className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
                   Auto-Assigned Division
                 </span>
-                <div className="text-xs font-bold text-brightBlue dark:text-darkCyan flex items-center gap-1.5 mt-0.5">
+                <div className="text-xs font-medium text-brightBlue dark:text-darkCyan flex items-center gap-1.5 mt-0.5">
                   <Building className="w-3.5 h-3.5 shrink-0" />
                   <span>
                     {testResult.predicted_category.includes('Electrical')
@@ -631,8 +631,8 @@ export const ModelEvaluationPage: React.FC = () => {
 
             {/* Explanation card */}
             {priorityResult?.reasoning && (
-              <div className="p-3.5 rounded-2xl bg-white dark:bg-[#171F3B] border border-slate-200 dark:border-white/10 text-xs text-slate-700 dark:text-slate-300 leading-relaxed shadow-2xs">
-                <span className="font-extrabold text-[#172033] dark:text-[#F8FAFC]">Priority Decision Reasoning: </span>
+              <div className="p-3.5 rounded-2xl bg-white dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-slate-700 dark:text-slate-300 leading-relaxed shadow-2xs">
+                <span className="font-medium text-[#172337] dark:text-[#F8FAFC]">Priority Decision Reasoning: </span>
                 <span className="italic">{priorityResult.reasoning}</span>
               </div>
             )}
@@ -640,14 +640,14 @@ export const ModelEvaluationPage: React.FC = () => {
             {/* Attributed Feature Tokens */}
             {testResult.influential_features?.length > 0 && (
               <div className="space-y-1.5">
-                <div className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <div className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Mathematical Feature Token Attribution (TF-IDF * Logistic Weights):
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {testResult.influential_features.map((feat) => (
                     <span
                       key={feat}
-                      className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#151D38] border border-violet-200 dark:border-violet-500/30 text-primaryViolet dark:text-darkCyan font-mono text-xs font-bold shadow-2xs"
+                      className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#222A35] border border-slate-200 dark:border-slate-700 text-primaryViolet dark:text-darkCyan font-mono text-xs font-medium shadow-2xs"
                     >
                       +{feat}
                     </span>
@@ -659,7 +659,7 @@ export const ModelEvaluationPage: React.FC = () => {
             {/* Top Class Probability Bars */}
             {testResult.category_probabilities && (
               <div className="space-y-2 pt-1 border-t border-slate-200 dark:border-white/10">
-                <div className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <div className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Top Class Probability Distribution:
                 </div>
                 <div className="space-y-2">
@@ -671,15 +671,15 @@ export const ModelEvaluationPage: React.FC = () => {
                         <div className="w-56 truncate text-slate-700 dark:text-slate-300 font-medium">{cat}</div>
                         <div className="flex-1 bg-slate-200 dark:bg-white/10 rounded-full h-2 overflow-hidden">
                           <div
-                            className={`h-2 rounded-full transition-all duration-500 ${
+                            className={`h-2 rounded-full transition-colors duration-500 ${
                               cat === testResult.predicted_category
-                                ? 'bg-gradient-to-r from-primaryViolet to-brightBlue'
+                                ? 'bg-primaryViolet'
                                 : 'bg-slate-400 dark:bg-slate-600'
                             }`}
                             style={{ width: `${Math.max(2, prob * 100)}%` }}
                           />
                         </div>
-                        <div className="w-14 text-right font-mono text-slate-800 dark:text-slate-200 font-bold">
+                        <div className="w-14 text-right font-mono text-slate-800 dark:text-slate-200 font-medium">
                           {(prob * 100).toFixed(1)}%
                         </div>
                       </div>
@@ -692,12 +692,12 @@ export const ModelEvaluationPage: React.FC = () => {
       </div>
 
       {/* Per-Category Performance Table with Search Filter */}
-      <div className="bg-white dark:bg-[#171F3B] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-card-light dark:shadow-card-dark p-6 sm:p-8 space-y-4">
+      <div className="bg-white dark:bg-[#1A2029] rounded-2xl border border-slate-200/90 dark:border-white/10   p-6 sm:p-8 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 dark:border-white/10 pb-4 gap-3">
           <div>
             <div className="flex items-center gap-2">
               <BarChart2 className="w-5 h-5 text-primaryViolet dark:text-darkPurple" />
-              <h3 className="text-base font-black text-[#172033] dark:text-[#F8FAFC]">
+              <h3 className="text-base font-medium text-[#172337] dark:text-[#F8FAFC]">
                 Per-Category Classification Metrics
               </h3>
             </div>
@@ -712,7 +712,7 @@ export const ModelEvaluationPage: React.FC = () => {
               value={tableSearch}
               onChange={(e) => setTableSearch(e.target.value)}
               placeholder="Search category..."
-              className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-[#172033] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-primaryViolet"
+              className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-primaryViolet"
             />
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2" />
           </div>
@@ -721,7 +721,7 @@ export const ModelEvaluationPage: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0F1530] text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+              <tr className="border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1A2029] text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-400">
                 <th className="py-3 px-4">Category Name</th>
                 <th className="py-3 px-4 text-emerald-700 dark:text-darkMint">Precision</th>
                 <th className="py-3 px-4 text-brightBlue dark:text-darkCyan">Recall</th>
@@ -733,13 +733,13 @@ export const ModelEvaluationPage: React.FC = () => {
             <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono">
               {filteredClasses.map(([cat, m]: [string, any]) => (
                 <tr key={cat} className="hover:bg-slate-50/80 dark:hover:bg-white/5 transition-colors">
-                  <td className="py-3 px-4 font-sans font-bold text-slate-800 dark:text-slate-200">{cat}</td>
-                  <td className="py-3 px-4 text-emerald-700 dark:text-darkMint font-extrabold">{m.precision.toFixed(3)}</td>
-                  <td className="py-3 px-4 text-brightBlue dark:text-darkCyan font-extrabold">{m.recall.toFixed(3)}</td>
-                  <td className="py-3 px-4 text-primaryViolet dark:text-darkPurple font-extrabold">{m.f1_score.toFixed(3)}</td>
-                  <td className="py-3 px-4 text-right text-slate-500 dark:text-slate-400 font-bold">{m.support}</td>
+                  <td className="py-3 px-4 font-sans font-medium text-slate-800 dark:text-slate-200">{cat}</td>
+                  <td className="py-3 px-4 text-emerald-700 dark:text-darkMint font-medium">{m.precision.toFixed(3)}</td>
+                  <td className="py-3 px-4 text-brightBlue dark:text-darkCyan font-medium">{m.recall.toFixed(3)}</td>
+                  <td className="py-3 px-4 text-primaryViolet dark:text-darkPurple font-medium">{m.f1_score.toFixed(3)}</td>
+                  <td className="py-3 px-4 text-right text-slate-500 dark:text-slate-400 font-medium">{m.support}</td>
                   <td className="py-3 px-4 text-center font-sans">
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-mintGreen/15 text-emerald-700 dark:text-mintGreen border border-emerald-200 dark:border-mintGreen/30">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-mintGreen/15 text-emerald-700 dark:text-mintGreen border border-emerald-200 dark:border-mintGreen/30">
                       <CheckCheck className="w-3 h-3" />
                       <span>Ready</span>
                     </span>
@@ -753,12 +753,12 @@ export const ModelEvaluationPage: React.FC = () => {
 
       {/* 10x10 Multi-Class Confusion Matrix */}
       {modelInfo?.metrics?.confusion_matrix && (
-        <div className="bg-white dark:bg-[#171F3B] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-card-light dark:shadow-card-dark p-6 sm:p-8 space-y-4">
+        <div className="bg-white dark:bg-[#1A2029] rounded-2xl border border-slate-200/90 dark:border-white/10   p-6 sm:p-8 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-4 flex-wrap gap-2">
             <div>
               <div className="flex items-center gap-2">
                 <Database className="w-5 h-5 text-brightBlue dark:text-darkCyan" />
-                <h3 className="text-base font-black text-[#172033] dark:text-[#F8FAFC]">
+                <h3 className="text-base font-medium text-[#172337] dark:text-[#F8FAFC]">
                   10x10 Multi-Class Confusion Matrix
                 </h3>
               </div>
@@ -766,7 +766,7 @@ export const ModelEvaluationPage: React.FC = () => {
                 Rows = Actual Ground Truth Labels • Columns = Model Predictions • Diagonal indicates True Positives.
               </p>
             </div>
-            <span className="text-[10px] font-mono text-primaryViolet dark:text-darkCyan bg-violet-100 dark:bg-white/10 px-2.5 py-1 rounded-md border border-violet-200 dark:border-white/10 font-bold">
+            <span className="text-[10px] font-mono text-primaryViolet dark:text-darkCyan bg-slate-100 dark:bg-white/10 px-2.5 py-1 rounded-md border border-slate-200 dark:border-white/10 font-medium">
               Diagonal = True Positives
             </span>
           </div>
@@ -775,9 +775,9 @@ export const ModelEvaluationPage: React.FC = () => {
             <table className="text-[11px] border-collapse font-mono w-full">
               <thead>
                 <tr>
-                  <th className="p-2 text-slate-500 dark:text-slate-400 font-sans text-left font-bold">Actual \ Pred</th>
+                  <th className="p-2 text-slate-500 dark:text-slate-400 font-sans text-left font-medium">Actual \ Pred</th>
                   {modelInfo.metrics.classes_order?.map((_: string, idx: number) => (
-                    <th key={idx} className="p-2 text-center text-slate-500 dark:text-slate-400 font-bold">
+                    <th key={idx} className="p-2 text-center text-slate-500 dark:text-slate-400 font-medium">
                       C{idx + 1}
                     </th>
                   ))}
@@ -786,7 +786,7 @@ export const ModelEvaluationPage: React.FC = () => {
               <tbody>
                 {modelInfo.metrics.confusion_matrix.map((row: number[], rowIdx: number) => (
                   <tr key={rowIdx}>
-                    <td className="p-2 font-sans font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap text-xs">
+                    <td className="p-2 font-sans font-medium text-slate-700 dark:text-slate-300 whitespace-nowrap text-xs">
                       C{rowIdx + 1} ({modelInfo.metrics.classes_order[rowIdx].slice(0, 22)}...)
                     </td>
                     {row.map((val: number, colIdx: number) => {
@@ -796,9 +796,9 @@ export const ModelEvaluationPage: React.FC = () => {
                           key={colIdx}
                           className={`p-2 text-center border border-slate-100 dark:border-white/5 rounded-lg ${
                             isDiagonal && val > 0
-                              ? 'bg-primaryViolet dark:bg-darkPurple text-white font-black shadow-xs'
+                              ? 'bg-primaryViolet dark:bg-darkPurple text-white font-medium shadow-xs'
                               : val > 0
-                              ? 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 font-bold'
+                              ? 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 font-medium'
                               : 'text-slate-300 dark:text-slate-600'
                           }`}
                         >
@@ -815,13 +815,13 @@ export const ModelEvaluationPage: React.FC = () => {
       )}
 
       {/* Examiner Defense & Viva Knowledge Base */}
-      <div className="bg-white dark:bg-[#171F3B] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-card-light dark:shadow-card-dark p-6 sm:p-8 space-y-6">
+      <div className="bg-white dark:bg-[#1A2029] rounded-2xl border border-slate-200/90 dark:border-white/10   p-6 sm:p-8 space-y-6">
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-4 flex-wrap gap-2">
-          <div className="flex items-center gap-2 text-[#172033] dark:text-[#F8FAFC] font-black text-base sm:text-lg">
+          <div className="flex items-center gap-2 text-[#172337] dark:text-[#F8FAFC] font-medium text-base sm:text-lg">
             <BookOpen className="w-5 h-5 text-primaryViolet dark:text-darkPurple" />
             <span>Examiner Defense & Viva Foundations Guide</span>
           </div>
-          <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 font-bold">
+          <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 font-medium">
             Verified Defense Principles
           </span>
         </div>
@@ -831,7 +831,7 @@ export const ModelEvaluationPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setFaqTab('architecture')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
               faqTab === 'architecture'
                 ? 'bg-primaryViolet text-white shadow-xs'
                 : 'bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300'
@@ -842,7 +842,7 @@ export const ModelEvaluationPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setFaqTab('safety')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
               faqTab === 'safety'
                 ? 'bg-primaryViolet text-white shadow-xs'
                 : 'bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300'
@@ -853,7 +853,7 @@ export const ModelEvaluationPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setFaqTab('production')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
               faqTab === 'production'
                 ? 'bg-primaryViolet text-white shadow-xs'
                 : 'bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300'
@@ -867,8 +867,8 @@ export const ModelEvaluationPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-600 dark:text-slate-300">
           {faqTab === 'architecture' && (
             <>
-              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200/80 dark:border-white/5 space-y-2 shadow-2xs">
-                <h4 className="font-extrabold text-[#172033] dark:text-[#F8FAFC] text-sm flex items-center gap-2">
+              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200/80 dark:border-white/5 space-y-2 shadow-2xs">
+                <h4 className="font-medium text-[#172337] dark:text-[#F8FAFC] text-sm flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-primaryViolet dark:text-darkCyan shrink-0" />
                   <span>Q: Why TF-IDF + Logistic Regression over BERT or LLM APIs?</span>
                 </h4>
@@ -879,8 +879,8 @@ export const ModelEvaluationPage: React.FC = () => {
                 </p>
               </div>
 
-              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200/80 dark:border-white/5 space-y-2 shadow-2xs">
-                <h4 className="font-extrabold text-[#172033] dark:text-[#F8FAFC] text-sm flex items-center gap-2">
+              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200/80 dark:border-white/5 space-y-2 shadow-2xs">
+                <h4 className="font-medium text-[#172337] dark:text-[#F8FAFC] text-sm flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-primaryViolet dark:text-darkCyan shrink-0" />
                   <span>Q: How does Sublinear TF and N-gram range improve classification?</span>
                 </h4>
@@ -894,8 +894,8 @@ export const ModelEvaluationPage: React.FC = () => {
 
           {faqTab === 'safety' && (
             <>
-              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200/80 dark:border-white/5 space-y-2 shadow-2xs">
-                <h4 className="font-extrabold text-[#172033] dark:text-[#F8FAFC] text-sm flex items-center gap-2">
+              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200/80 dark:border-white/5 space-y-2 shadow-2xs">
+                <h4 className="font-medium text-[#172337] dark:text-[#F8FAFC] text-sm flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-rose-500 shrink-0" />
                   <span>Q: Why is Priority calculated by a Scoring Engine rather than pure ML?</span>
                 </h4>
@@ -905,8 +905,8 @@ export const ModelEvaluationPage: React.FC = () => {
                 </p>
               </div>
 
-              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200/80 dark:border-white/5 space-y-2 shadow-2xs">
-                <h4 className="font-extrabold text-[#172033] dark:text-[#F8FAFC] text-sm flex items-center gap-2">
+              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200/80 dark:border-white/5 space-y-2 shadow-2xs">
+                <h4 className="font-medium text-[#172337] dark:text-[#F8FAFC] text-sm flex items-center gap-2">
                   <Sliders className="w-4 h-4 text-amber-500 shrink-0" />
                   <span>Q: What parameters contribute to the final Priority score (0-100)?</span>
                 </h4>
@@ -923,19 +923,19 @@ export const ModelEvaluationPage: React.FC = () => {
 
           {faqTab === 'production' && (
             <>
-              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200/80 dark:border-white/5 space-y-2 shadow-2xs">
-                <h4 className="font-extrabold text-[#172033] dark:text-[#F8FAFC] text-sm flex items-center gap-2">
+              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200/80 dark:border-white/5 space-y-2 shadow-2xs">
+                <h4 className="font-medium text-[#172337] dark:text-[#F8FAFC] text-sm flex items-center gap-2">
                   <Layers className="w-4 h-4 text-brightBlue dark:text-darkCyan shrink-0" />
                   <span>Q: How does TF-IDF Cosine Duplicate Detection prevent crew waste?</span>
                 </h4>
                 <p className="leading-relaxed text-slate-600 dark:text-slate-400">
                   When 50 students report the same water leak in Hostel 2, sending 50 separate technicians would paralyze campus facilities.
-                  ComplainAI vectorizes new complaints and computes cosine similarity against open tickets in the same facility division. Similar tickets (&gt; 0.50 similarity) are flagged directly in the Admin Console without silent deletion, allowing consolidation into a single master work order.
+                  ResolveX-AI vectorizes new complaints and computes cosine similarity against open tickets in the same facility division. Similar tickets (&gt; 0.50 similarity) are flagged directly in the Admin Console without silent deletion, allowing consolidation into a single master work order.
                 </p>
               </div>
 
-              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200/80 dark:border-white/5 space-y-2 shadow-2xs">
-                <h4 className="font-extrabold text-[#172033] dark:text-[#F8FAFC] text-sm flex items-center gap-2">
+              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200/80 dark:border-white/5 space-y-2 shadow-2xs">
+                <h4 className="font-medium text-[#172337] dark:text-[#F8FAFC] text-sm flex items-center gap-2">
                   <CheckCheck className="w-4 h-4 text-emerald-600 dark:text-mintGreen shrink-0" />
                   <span>Q: How does the Human-in-the-Loop continuous feedback cycle work?</span>
                 </h4>

@@ -102,7 +102,7 @@ function extractLatestNotesFromHistory(history: StatusHistory[]) {
 export const AdminComplaintDetailPage: React.FC = () => {
   const { publicId } = useParams<{ publicId: string }>();
   const navigate = useNavigate();
-  const { isMobileMode } = useDisplayMode();
+  const isMobileMode = false;
 
   const [complaint, setComplaint] = useState<Complaint | null>(null);
   const [history, setHistory] = useState<StatusHistory[]>([]);
@@ -507,13 +507,13 @@ export const AdminComplaintDetailPage: React.FC = () => {
         <div className="w-12 h-12 mx-auto rounded-2xl bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center">
           <XCircle className="w-6 h-6" />
         </div>
-        <div className="text-rose-600 dark:text-darkCoral font-extrabold text-lg">Complaint Not Found</div>
+        <div className="text-rose-600 dark:text-darkCoral font-medium text-lg">Complaint Not Found</div>
         <p className="text-xs text-slate-500 dark:text-slate-400">
           The requested public ID does not exist in the database or you do not have permission to inspect it.
         </p>
         <Link
           to="/admin"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-primaryViolet dark:text-darkCyan hover:underline"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-primaryViolet dark:text-darkCyan hover:underline"
         >
           <ArrowLeft className="w-4 h-4" /> Return to Triage Queue
         </Link>
@@ -566,13 +566,13 @@ export const AdminComplaintDetailPage: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-slate-200/60 dark:border-white/10">
         <Link
           to="/admin"
-          className="inline-flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-primaryViolet dark:hover:text-darkCyan transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-primaryViolet dark:hover:text-darkCyan transition-colors"
         >
           <ArrowLeft className="w-4 h-4 text-primaryViolet dark:text-darkCyan" />
           <span>Back to Triage Queue</span>
         </Link>
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-mono text-xs font-black text-primaryViolet dark:text-darkCyan bg-violet-100 dark:bg-white/5 px-2.5 py-1 rounded-lg border border-violet-200 dark:border-white/10 shadow-2xs">
+          <span className="font-mono text-xs font-medium text-primaryViolet dark:text-darkCyan bg-slate-100 dark:bg-white/5 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-white/10 shadow-2xs">
             {complaint.public_id}
           </span>
           <StatusBadge status={complaint.status} size="sm" />
@@ -589,7 +589,7 @@ export const AdminComplaintDetailPage: React.FC = () => {
           </div>
           <button
             onClick={() => setError(null)}
-            className="text-rose-500 hover:text-rose-700 dark:hover:text-rose-200 text-xs font-bold shrink-0"
+            className="text-rose-500 hover:text-rose-700 dark:hover:text-rose-200 text-xs font-medium shrink-0"
           >
             ✕
           </button>
@@ -597,14 +597,14 @@ export const AdminComplaintDetailPage: React.FC = () => {
       )}
 
       {successMsg && (
-        <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-mintGreen/20 border border-emerald-200 dark:border-mintGreen/40 text-emerald-800 dark:text-mintGreen text-xs flex items-start justify-between gap-3 animate-in fade-in font-bold shadow-xs">
+        <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-mintGreen/20 border border-emerald-200 dark:border-mintGreen/40 text-emerald-800 dark:text-mintGreen text-xs flex items-start justify-between gap-3 animate-in fade-in font-medium shadow-xs">
           <div className="flex items-center gap-2.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-mintGreen shrink-0" />
             <span>{successMsg}</span>
           </div>
           <button
             onClick={() => setSuccessMsg(null)}
-            className="text-emerald-700 hover:text-emerald-900 dark:hover:text-emerald-200 text-xs font-bold shrink-0"
+            className="text-emerald-700 hover:text-emerald-900 dark:hover:text-emerald-200 text-xs font-medium shrink-0"
           >
             ✕
           </button>
@@ -612,11 +612,11 @@ export const AdminComplaintDetailPage: React.FC = () => {
       )}
 
       {/* STEP-BY-STEP PROGRESSION STEPPER BANNER */}
-      <div className="bg-white dark:bg-[#171F3B] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-card-light dark:shadow-card-dark p-4 sm:p-6 space-y-3">
+      <div className="bg-white dark:bg-[#1A2029] rounded-2xl border border-slate-200/90 dark:border-white/10   p-4 sm:p-6 space-y-3">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-primaryViolet dark:bg-darkCyan animate-pulse" />
-            <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+            <span className="w-2.5 h-2.5 rounded-full bg-slate-100 dark:bg-slate-800 dark:bg-darkCyan " />
+            <h3 className="text-xs font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
               Audited 5-Stage Maintenance Lifecycle
             </h3>
           </div>
@@ -637,20 +637,20 @@ export const AdminComplaintDetailPage: React.FC = () => {
             return (
               <div
                 key={st.step}
-                className={`p-3 rounded-2xl border text-center transition-all ${
+                className={`p-3 rounded-2xl border text-center transition-colors ${
                   isStageCompletedUnderRejected || isPast
                     ? 'bg-emerald-50 dark:bg-mintGreen/15 border-emerald-200 dark:border-mintGreen/40 text-emerald-800 dark:text-mintGreen'
                     : isStageRejected
-                    ? 'bg-rose-50 dark:bg-rose-500/20 border-rose-300 dark:border-rose-500/50 text-rose-700 dark:text-rose-300 font-bold'
+                    ? 'bg-rose-50 dark:bg-rose-500/20 border-rose-300 dark:border-rose-500/50 text-rose-700 dark:text-rose-300 font-medium'
                     : isCurrent
-                    ? 'bg-gradient-to-r from-primaryViolet to-brightBlue border-transparent text-white font-black shadow-glossy-light dark:shadow-neon-violet/30'
+                    ? 'bg-primaryViolet border-transparent text-white font-medium  '
                     : 'bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/5 text-slate-400 font-medium'
                 }`}
               >
-                <div className="text-[10px] uppercase font-bold tracking-wider mb-0.5 opacity-80">
+                <div className="text-[10px] uppercase font-medium tracking-wider mb-0.5 opacity-80">
                   Stage {st.step}
                 </div>
-                <div className="text-xs font-bold truncate">
+                <div className="text-xs font-medium truncate">
                   {isStageRejected ? 'Rejected at Triage' : st.name}
                 </div>
                 <div className="mt-1 flex justify-center">
@@ -660,7 +660,7 @@ export const AdminComplaintDetailPage: React.FC = () => {
                   {isStageRejected && (
                     <XCircle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
                   )}
-                  {isCurrent && <span className="w-2 h-2 rounded-full bg-white animate-ping" />}
+                  {isCurrent && <span className="w-2 h-2 rounded-full bg-white " />}
                 </div>
               </div>
             );
@@ -684,9 +684,9 @@ export const AdminComplaintDetailPage: React.FC = () => {
         {/* Left Column (8 cols): Details & AI Evidence & First Section Active Summary */}
         <div className="lg:col-span-8 space-y-6">
           {/* Main Info Card with Prominent First Section Active Summary */}
-          <div className="bg-white dark:bg-[#171F3B] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-card-light dark:shadow-card-dark p-6 sm:p-7 space-y-5 backdrop-blur-xl">
+          <div className="bg-white dark:bg-[#1A2029] rounded-2xl border border-slate-200/90 dark:border-white/10   p-6 sm:p-7 space-y-5 ">
             <div className="flex items-start justify-between gap-4">
-              <h1 className="text-xl sm:text-2xl font-black text-[#172033] dark:text-[#F8FAFC] leading-snug">
+              <h1 className="text-xl sm:text-2xl font-medium text-[#172337] dark:text-[#F8FAFC] leading-snug">
                 {complaint.title}
               </h1>
             </div>
@@ -713,36 +713,36 @@ export const AdminComplaintDetailPage: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-              <h3 className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <h3 className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Full Problem Description
               </h3>
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200/80 dark:border-white/5 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-sans shadow-2xs">
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200/80 dark:border-white/5 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-sans shadow-2xs">
                 {complaint.description}
               </div>
             </div>
 
             {/* FIRST SECTION ACTIVE ADMINISTRATIVE TRIAGE & EXECUTION RECORD */}
-            <div className="p-5 rounded-2xl bg-[#EEF5FF] dark:bg-[#0F1530] border border-blue-200/80 dark:border-white/10 space-y-3.5 shadow-2xs">
+            <div className="p-5 rounded-2xl bg-[#F2F4F7] dark:bg-[#1A2029] border border-blue-200/80 dark:border-white/10 space-y-3.5 shadow-2xs">
               <div className="flex items-center justify-between border-b border-blue-200/60 dark:border-white/10 pb-2.5">
-                <div className="flex items-center gap-2 text-[#172033] dark:text-[#F8FAFC] font-black text-xs sm:text-sm">
+                <div className="flex items-center gap-2 text-[#172337] dark:text-[#F8FAFC] font-medium text-xs sm:text-sm">
                   <ShieldCheck className="w-4 h-4 text-brightBlue dark:text-darkCyan" />
                   <span>Active Administrative Triage & Execution Record</span>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-100 dark:bg-white/10 text-brightBlue dark:text-darkCyan font-bold">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-100 dark:bg-white/10 text-brightBlue dark:text-darkCyan font-medium">
                   Authoritative Record
                 </span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 {/* 1. Division & Dispatch */}
-                <div className="p-3.5 rounded-xl bg-white dark:bg-[#171F3B] border border-slate-200 dark:border-white/10 shadow-2xs space-y-1">
+                <div className="p-3.5 rounded-xl bg-white dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 shadow-2xs space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                    <span className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
                       Assigned Division & Dispatch
                     </span>
                     <Building className="w-3 h-3 text-brightBlue dark:text-darkCyan" />
                   </div>
-                  <div className="font-bold text-[#172033] dark:text-[#F8FAFC]">
+                  <div className="font-medium text-[#172337] dark:text-[#F8FAFC]">
                     {complaint.assigned_department || 'Triage in progress / Unassigned'}
                   </div>
                   <div className="text-[11px] text-slate-600 dark:text-slate-400 italic">
@@ -751,9 +751,9 @@ export const AdminComplaintDetailPage: React.FC = () => {
                 </div>
 
                 {/* 2. Priority & Justification */}
-                <div className="p-3.5 rounded-xl bg-white dark:bg-[#171F3B] border border-slate-200 dark:border-white/10 shadow-2xs space-y-1">
+                <div className="p-3.5 rounded-xl bg-white dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 shadow-2xs space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                    <span className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
                       Assigned Priority Level
                     </span>
                     <PriorityBadge priority={complaint.final_priority} size="sm" />
@@ -764,14 +764,14 @@ export const AdminComplaintDetailPage: React.FC = () => {
                 </div>
 
                 {/* 3. Category & Correction Reason */}
-                <div className="p-3.5 rounded-xl bg-white dark:bg-[#171F3B] border border-slate-200 dark:border-white/10 shadow-2xs space-y-1">
+                <div className="p-3.5 rounded-xl bg-white dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 shadow-2xs space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                    <span className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
                       Active Category
                     </span>
                     <Tag className="w-3 h-3 text-primaryViolet dark:text-darkCyan" />
                   </div>
-                  <div className="font-bold text-[#172033] dark:text-[#F8FAFC]">
+                  <div className="font-medium text-[#172337] dark:text-[#F8FAFC]">
                     {complaint.category}
                   </div>
                   <div className="text-[11px] text-slate-600 dark:text-slate-400 italic">
@@ -780,9 +780,9 @@ export const AdminComplaintDetailPage: React.FC = () => {
                 </div>
 
                 {/* 4. Current Resolution Summary */}
-                <div className="p-3.5 rounded-xl bg-white dark:bg-[#171F3B] border border-slate-200 dark:border-white/10 shadow-2xs space-y-1">
+                <div className="p-3.5 rounded-xl bg-white dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 shadow-2xs space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                    <span className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
                       Resolution Status
                     </span>
                     <StatusBadge status={complaint.status} size="sm" />
@@ -804,63 +804,63 @@ export const AdminComplaintDetailPage: React.FC = () => {
           </div>
 
           {/* AI Machine Learning Classification Evidence Card */}
-          <div className="bg-[#F0E9FF] dark:bg-[#151D38] rounded-3xl border border-violet-200/80 dark:border-violet-500/30 shadow-card-light dark:shadow-card-dark p-6 sm:p-7 space-y-4">
-            <div className="flex items-center justify-between border-b border-violet-200/60 dark:border-white/10 pb-3">
-              <div className="flex items-center gap-2 text-[#172033] dark:text-[#F8FAFC] font-black text-sm">
-                <Sparkles className="w-4 h-4 text-primaryViolet dark:text-darkPurple" />
+          <div className="bg-[#F2F4F7] dark:bg-[#222A35] rounded-2xl border border-slate-200 dark:border-slate-700   p-6 sm:p-7 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3">
+              <div className="flex items-center gap-2 text-[#172337] dark:text-[#F8FAFC] font-medium text-sm">
+                <ShieldCheck className="w-4 h-4 text-primaryViolet dark:text-darkPurple" />
                 <span>AI Categorization & Priority Audit</span>
               </div>
-              <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-md bg-violet-200/70 dark:bg-white/10 text-primaryViolet dark:text-darkCyan font-bold border border-violet-300 dark:border-white/10">
+              <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-md bg-violet-200/70 dark:bg-white/10 text-primaryViolet dark:text-darkCyan font-medium border border-slate-200 dark:border-white/10">
                 Logistic Regression + TF-IDF
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="bg-white dark:bg-[#171F3B] p-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xs space-y-1.5">
-                <span className="text-slate-500 dark:text-slate-400 font-bold text-[11px] uppercase tracking-wider">
+              <div className="bg-white dark:bg-[#1A2029] p-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xs space-y-1.5">
+                <span className="text-slate-500 dark:text-slate-400 font-medium text-[11px] uppercase tracking-wider">
                   Model Predicted Category
                 </span>
-                <div className="text-sm font-black text-[#172033] dark:text-[#F8FAFC]">
+                <div className="text-sm font-medium text-[#172337] dark:text-[#F8FAFC]">
                   {complaint.predicted_category}
                 </div>
                 <div className="text-slate-600 dark:text-slate-400 pt-1 font-medium flex items-center gap-1.5">
                   <span>Confidence Score:</span>
-                  <span className="font-black text-primaryViolet dark:text-darkCyan font-mono">
+                  <span className="font-medium text-primaryViolet dark:text-darkCyan font-mono">
                     {complaint.classification_confidence ? `${(complaint.classification_confidence * 100).toFixed(1)}%` : 'Calibrated'}
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                  Current Assigned: <span className="font-bold text-primaryViolet dark:text-darkCyan">{complaint.category}</span>
+                  Current Assigned: <span className="font-medium text-primaryViolet dark:text-darkCyan">{complaint.category}</span>
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-[#171F3B] p-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xs space-y-1.5">
-                <span className="text-slate-500 dark:text-slate-400 font-bold text-[11px] uppercase tracking-wider">
+              <div className="bg-white dark:bg-[#1A2029] p-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xs space-y-1.5">
+                <span className="text-slate-500 dark:text-slate-400 font-medium text-[11px] uppercase tracking-wider">
                   Priority Engine Output
                 </span>
                 <div className="mt-1 flex items-center gap-2">
                   <PriorityBadge priority={complaint.predicted_priority} size="sm" />
-                  <span className="text-[#172033] dark:text-[#F8FAFC] font-mono font-black">
+                  <span className="text-[#172337] dark:text-[#F8FAFC] font-mono font-medium">
                     ({complaint.priority_score}/100)
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                   Current Assigned Priority:{' '}
-                  <span className="font-bold text-[#172033] dark:text-[#F8FAFC]">{complaint.final_priority}</span>
+                  <span className="font-medium text-[#172337] dark:text-[#F8FAFC]">{complaint.final_priority}</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-[#171F3B] p-4 rounded-2xl border border-slate-200 dark:border-white/10 text-xs text-slate-700 dark:text-slate-300 leading-relaxed shadow-2xs">
-              <span className="font-bold text-[#172033] dark:text-[#F8FAFC]">Scoring Engine Reasoning: </span>
+            <div className="bg-white dark:bg-[#1A2029] p-4 rounded-2xl border border-slate-200 dark:border-white/10 text-xs text-slate-700 dark:text-slate-300 leading-relaxed shadow-2xs">
+              <span className="font-medium text-[#172337] dark:text-[#F8FAFC]">Scoring Engine Reasoning: </span>
               <span className="italic">{complaint.priority_explanation}</span>
             </div>
           </div>
 
           {/* Potential Duplicate Suggestions */}
           {duplicates.length > 0 && (
-            <div className="bg-[#FFF4E8] dark:bg-[#151D38] rounded-3xl border border-amber-200 dark:border-amber-500/30 shadow-card-light dark:shadow-card-dark p-6 space-y-4">
-              <div className="flex items-center gap-2 text-amber-800 dark:text-darkAmber font-black text-sm">
+            <div className="bg-[#FFF4E8] dark:bg-[#222A35] rounded-2xl border border-amber-200 dark:border-amber-500/30   p-6 space-y-4">
+              <div className="flex items-center gap-2 text-amber-800 dark:text-darkAmber font-medium text-sm">
                 <Layers className="w-4 h-4 text-amber-600 dark:text-darkAmber" />
                 <span>TF-IDF Cosine Similarity Matches ({duplicates.length})</span>
               </div>
@@ -872,21 +872,21 @@ export const AdminComplaintDetailPage: React.FC = () => {
                 {duplicates.map((dup) => (
                   <div
                     key={dup.complaint_id}
-                    className="p-4 rounded-2xl bg-white dark:bg-[#171F3B] border border-amber-200/80 dark:border-white/10 text-xs space-y-1.5 shadow-2xs"
+                    className="p-4 rounded-2xl bg-white dark:bg-[#1A2029] border border-amber-200/80 dark:border-white/10 text-xs space-y-1.5 shadow-2xs"
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-mono font-bold text-primaryViolet dark:text-darkCyan">{dup.public_id}</span>
-                      <span className="font-mono text-amber-800 dark:text-darkAmber font-black">
+                      <span className="font-mono font-medium text-primaryViolet dark:text-darkCyan">{dup.public_id}</span>
+                      <span className="font-mono text-amber-800 dark:text-darkAmber font-medium">
                         {(dup.similarity_score * 100).toFixed(0)}% match
                       </span>
                     </div>
-                    <div className="font-bold text-[#172033] dark:text-[#F8FAFC]">{dup.title}</div>
+                    <div className="font-medium text-[#172337] dark:text-[#F8FAFC]">{dup.title}</div>
                     <div className="text-slate-500 dark:text-slate-400 text-[11px]">{dup.explanation}</div>
                     <div className="pt-1 flex items-center gap-3">
                       <StatusBadge status={dup.status} size="sm" />
                       <Link
                         to={`/admin/complaints/${dup.public_id}`}
-                        className="text-[11px] text-primaryViolet dark:text-darkCyan hover:underline font-bold"
+                        className="text-[11px] text-primaryViolet dark:text-darkCyan hover:underline font-medium"
                       >
                         Inspect Candidate &rarr;
                       </Link>
@@ -898,12 +898,12 @@ export const AdminComplaintDetailPage: React.FC = () => {
           )}
 
           {/* Complete Status History Timeline */}
-          <div className="bg-white dark:bg-[#171F3B] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-card-light dark:shadow-card-dark p-6 sm:p-7 space-y-4">
+          <div className="bg-white dark:bg-[#1A2029] rounded-2xl border border-slate-200/90 dark:border-white/10   p-6 sm:p-7 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-3">
-              <div className="flex items-center gap-2 text-[#172033] dark:text-[#F8FAFC] font-black text-sm">
+              <div className="flex items-center gap-2 text-[#172337] dark:text-[#F8FAFC] font-medium text-sm">
                 <History className="w-4 h-4 text-brightBlue dark:text-darkCyan" />
                 <span>Immutable Audit Trail & Status History</span>
-                <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300">
+                <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300">
                   {displayHistory.length} {displayHistory.length === 1 ? 'event' : 'events'}
                 </span>
               </div>
@@ -912,7 +912,7 @@ export const AdminComplaintDetailPage: React.FC = () => {
                 onClick={refreshHistory}
                 disabled={refreshingHistory}
                 title="Refresh audit trail from database"
-                className="inline-flex items-center gap-1.5 text-[11px] font-bold text-primaryViolet dark:text-darkCyan hover:opacity-80 transition-opacity"
+                className="inline-flex items-center gap-1.5 text-[11px] font-medium text-primaryViolet dark:text-darkCyan hover:opacity-80 transition-opacity"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${refreshingHistory ? 'animate-spin' : ''}`} />
                 <span>Refresh Log</span>
@@ -922,9 +922,9 @@ export const AdminComplaintDetailPage: React.FC = () => {
             <div className="space-y-4 relative before:absolute before:inset-0 before:left-3 before:w-0.5 before:bg-slate-200 dark:before:bg-white/10 pt-1">
               {displayHistory.map((h, idx) => (
                 <div key={h.id || idx} className="relative pl-8 text-xs space-y-1.5 animate-in fade-in">
-                  <div className="absolute left-1.5 top-1.5 w-3.5 h-3.5 rounded-full bg-white dark:bg-[#171F3B] border-2 border-primaryViolet dark:border-cyan-400 shadow-xs" />
+                  <div className="absolute left-1.5 top-1.5 w-3.5 h-3.5 rounded-full bg-white dark:bg-[#1A2029] border-2 border-primaryViolet dark:border-cyan-400 shadow-xs" />
                   <div className="flex items-center gap-2 flex-wrap font-medium">
-                    <span className="font-black text-[#172033] dark:text-[#F8FAFC] bg-slate-100 dark:bg-white/10 px-2 py-0.5 rounded text-[11px]">
+                    <span className="font-medium text-[#172337] dark:text-[#F8FAFC] bg-slate-100 dark:bg-white/10 px-2 py-0.5 rounded text-[11px]">
                       {h.new_status}
                     </span>
                     <span className="text-slate-300 dark:text-slate-700">•</span>
@@ -932,12 +932,12 @@ export const AdminComplaintDetailPage: React.FC = () => {
                       {new Date(h.created_at).toLocaleString()}
                     </span>
                     <span className="text-slate-300 dark:text-slate-700">•</span>
-                    <span className="text-primaryViolet dark:text-darkCyan font-bold text-[11px]">
+                    <span className="text-primaryViolet dark:text-darkCyan font-medium text-[11px]">
                       Actor: {h.changed_by}
                     </span>
                   </div>
                   {h.note && (
-                    <div className="text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-[#0F1530] p-3 rounded-xl border border-slate-200 dark:border-white/5 text-[11px] leading-relaxed shadow-2xs">
+                    <div className="text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-[#1A2029] p-3 rounded-xl border border-slate-200 dark:border-white/5 text-[11px] leading-relaxed shadow-2xs">
                       {h.note}
                     </div>
                   )}
@@ -950,9 +950,9 @@ export const AdminComplaintDetailPage: React.FC = () => {
         {/* Right Column (4 cols): Administrative Actions */}
         <div className="lg:col-span-4 space-y-5">
           {/* 1. STEP-BY-STEP LIFECYCLE PROGRESSION CONTROLLER */}
-          <div className="bg-white dark:bg-[#171F3B] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-card-light dark:shadow-card-dark p-6 space-y-4">
+          <div className="bg-white dark:bg-[#1A2029] rounded-2xl border border-slate-200/90 dark:border-white/10   p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-3">
-              <div className="flex items-center gap-2 text-[#172033] dark:text-[#F8FAFC] font-black text-sm">
+              <div className="flex items-center gap-2 text-[#172337] dark:text-[#F8FAFC] font-medium text-sm">
                 <CheckCircle2 className="w-4 h-4 text-primaryViolet dark:text-darkPurple" />
                 <span>Lifecycle Progression</span>
               </div>
@@ -963,7 +963,7 @@ export const AdminComplaintDetailPage: React.FC = () => {
             {complaint.status === 'Rejected' && (
               <div className="space-y-3.5 animate-in fade-in">
                 <div className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/40 text-xs text-rose-800 dark:text-rose-200 space-y-1.5">
-                  <div className="font-bold flex items-center gap-1.5 text-sm">
+                  <div className="font-medium flex items-center gap-1.5 text-sm">
                     <XCircle className="w-4 h-4 text-rose-500 shrink-0" />
                     <span>Ticket Currently Rejected</span>
                   </div>
@@ -974,15 +974,15 @@ export const AdminComplaintDetailPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Restoration Remarks (Optional)
                   </label>
                   <input
                     type="text"
-                    value={restoreNote}
+                    aria-label="Restoration note" value={restoreNote}
                     onChange={(e) => setRestoreNote(e.target.value)}
                     placeholder="e.g. Student clarified safety concern; restoring for active dispatch."
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-[#172033] dark:text-[#F8FAFC] font-medium"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-[#172337] dark:text-[#F8FAFC] font-medium"
                   />
                 </div>
 
@@ -990,7 +990,7 @@ export const AdminComplaintDetailPage: React.FC = () => {
                   type="button"
                   onClick={handleRestoreComplaint}
                   disabled={isSaving}
-                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-primaryViolet to-brightBlue hover:opacity-95 text-white font-bold text-xs shadow-glossy-light dark:shadow-neon-violet/30 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2.5 rounded-xl bg-primaryViolet hover:opacity-95 text-white font-medium text-xs   disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>{actionLoading === 'restore' ? 'Restoring...' : 'Restore to Stage 2: Under Review →'}</span>
@@ -1001,8 +1001,8 @@ export const AdminComplaintDetailPage: React.FC = () => {
             {/* STAGE 1: SUBMITTED */}
             {complaint.status === 'Submitted' && (
               <div className="space-y-3.5 animate-in fade-in">
-                <div className="p-3 rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-800/40 text-xs text-slate-700 dark:text-slate-300 space-y-1">
-                  <div className="font-bold text-primaryViolet dark:text-darkCyan flex items-center gap-1.5">
+                <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 space-y-1">
+                  <div className="font-medium text-primaryViolet dark:text-darkCyan flex items-center gap-1.5">
                     <Info className="w-3.5 h-3.5" />
                     <span>Stage 1 of 5: Complaint Lodged</span>
                   </div>
@@ -1012,15 +1012,15 @@ export const AdminComplaintDetailPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Triage Inspection Remarks (Optional)
                   </label>
                   <textarea
                     rows={2}
-                    value={triageInspectionNote}
+                    aria-label="Inspection note" value={triageInspectionNote}
                     onChange={(e) => setTriageInspectionNote(e.target.value)}
                     placeholder="e.g. Physical inspection conducted; verified critical electrical danger."
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-[#172033] dark:text-[#F8FAFC] focus:outline-none focus:border-primaryViolet font-medium"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-[#172337] dark:text-[#F8FAFC] focus:outline-none focus:border-primaryViolet font-medium"
                   />
                 </div>
 
@@ -1028,7 +1028,7 @@ export const AdminComplaintDetailPage: React.FC = () => {
                   type="button"
                   onClick={handleAdvanceToUnderReview}
                   disabled={isSaving}
-                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-primaryViolet to-brightBlue hover:opacity-95 text-white font-bold text-xs shadow-glossy-light dark:shadow-neon-violet/30 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2.5 rounded-xl bg-primaryViolet hover:opacity-95 text-white font-medium text-xs   disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <ChevronRight className="w-4 h-4" />
                   <span>
@@ -1041,8 +1041,8 @@ export const AdminComplaintDetailPage: React.FC = () => {
             {/* STAGE 2: UNDER REVIEW */}
             {complaint.status === 'Under Review' && (
               <div className="space-y-3.5 animate-in fade-in">
-                <div className="p-3 rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-800/40 text-xs text-slate-700 dark:text-slate-300 space-y-1">
-                  <div className="font-bold text-primaryViolet dark:text-darkCyan flex items-center gap-1.5">
+                <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 space-y-1">
+                  <div className="font-medium text-primaryViolet dark:text-darkCyan flex items-center gap-1.5">
                     <Info className="w-3.5 h-3.5" />
                     <span>Stage 2 of 5: Triage Active</span>
                   </div>
@@ -1055,7 +1055,7 @@ export const AdminComplaintDetailPage: React.FC = () => {
                   type="button"
                   onClick={handleAssignDepartment}
                   disabled={isSaving || !assignedDept || !deptNote.trim()}
-                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-primaryViolet to-brightBlue hover:opacity-95 text-white font-bold text-xs shadow-glossy-light dark:shadow-neon-violet/30 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2.5 rounded-xl bg-primaryViolet hover:opacity-95 text-white font-medium text-xs   disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Building className="w-3.5 h-3.5" />
                   <span>
@@ -1075,7 +1075,7 @@ export const AdminComplaintDetailPage: React.FC = () => {
             {complaint.status === 'Assigned' && (
               <div className="space-y-3.5 animate-in fade-in">
                 <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/40 text-xs text-slate-700 dark:text-slate-300 space-y-1">
-                  <div className="font-bold text-brightBlue dark:text-darkCyan flex items-center gap-1.5">
+                  <div className="font-medium text-brightBlue dark:text-darkCyan flex items-center gap-1.5">
                     <Building className="w-3.5 h-3.5" />
                     <span>Stage 3 of 5: Assigned to {complaint.assigned_department}</span>
                   </div>
@@ -1086,44 +1086,44 @@ export const AdminComplaintDetailPage: React.FC = () => {
 
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                    <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                       Lead Technician / Crew on Site <span className="text-rose-500">*</span>
                     </label>
-                    <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wider">Mandatory</span>
+                    <span className="text-[10px] font-medium text-rose-500 uppercase tracking-wider">Mandatory</span>
                   </div>
                   <input
                     type="text"
                     required
-                    value={progressCrew}
+                    aria-label="Assigned crew" value={progressCrew}
                     onChange={(e) => setProgressCrew(e.target.value)}
                     placeholder="e.g. Lead Electrician Ramesh & assistant (mandatory)"
-                    className={`w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#0F1530] border ${!progressCrew.trim() ? 'border-amber-300/80 dark:border-amber-500/40' : 'border-slate-200 dark:border-white/10'} text-xs text-[#172033] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-brightBlue`}
+                    className={`w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2029] border ${!progressCrew.trim() ? 'border-amber-300/80 dark:border-amber-500/40' : 'border-slate-200 dark:border-white/10'} text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-brightBlue`}
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Estimated Duration of Work
                   </label>
                   <input
                     type="text"
-                    value={progressDuration}
+                    aria-label="Expected duration" value={progressDuration}
                     onChange={(e) => setProgressDuration(e.target.value)}
                     placeholder="e.g. 2 hours, 1 day, 45 minutes"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-[#172033] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-brightBlue"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-brightBlue"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     On-Site Work Start Note
                   </label>
                   <textarea
                     rows={2}
-                    value={progressNote}
+                    aria-label="Progress note" value={progressNote}
                     onChange={(e) => setProgressNote(e.target.value)}
                     placeholder="e.g. Power isolated at breaker switch #4; crew has begun replacing damaged cables."
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-[#172033] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-brightBlue"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-brightBlue"
                   />
                 </div>
 
@@ -1131,7 +1131,7 @@ export const AdminComplaintDetailPage: React.FC = () => {
                   type="button"
                   onClick={handleAdvanceToInProgress}
                   disabled={isSaving || !progressCrew.trim()}
-                  className="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs shadow-xs disabled:opacity-50 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-medium text-xs shadow-xs disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Wrench className="w-3.5 h-3.5" />
                   <span>
@@ -1149,7 +1149,7 @@ export const AdminComplaintDetailPage: React.FC = () => {
             {complaint.status === 'In Progress' && (
               <div className="space-y-3.5 animate-in fade-in">
                 <div className="p-3 rounded-xl bg-cyan-50 dark:bg-cyan-950/30 border border-cyan-200 dark:border-cyan-800/40 text-xs text-slate-700 dark:text-slate-300 space-y-1">
-                  <div className="font-bold text-cyan-700 dark:text-darkCyan flex items-center gap-1.5">
+                  <div className="font-medium text-cyan-700 dark:text-darkCyan flex items-center gap-1.5">
                     <Wrench className="w-3.5 h-3.5" />
                     <span>Stage 4 of 5: Active Repair in Progress</span>
                   </div>
@@ -1159,13 +1159,13 @@ export const AdminComplaintDetailPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-darkMint">
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-emerald-700 dark:text-darkMint">
                     Resolution Summary <span className="text-rose-500">*</span>
                   </label>
                   <textarea
                     rows={2}
                     required
-                    value={resolutionSummary}
+                    aria-label="Resolution summary" value={resolutionSummary}
                     onChange={(e) => setResolutionSummary(e.target.value)}
                     placeholder="e.g. Motherboard changed and fixed. Live wiring reinsulated, breaker tested."
                     className="w-full px-3 py-2 rounded-xl bg-emerald-50/70 dark:bg-mintGreen/15 border border-emerald-200 dark:border-mintGreen/40 text-xs text-slate-900 dark:text-slate-100 font-medium focus:outline-none focus:border-emerald-500"
@@ -1173,28 +1173,28 @@ export const AdminComplaintDetailPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Parts Replaced / Work Specifics (Optional)
                   </label>
                   <input
                     type="text"
-                    value={resolutionParts}
+                    aria-label="Parts used" value={resolutionParts}
                     onChange={(e) => setResolutionParts(e.target.value)}
                     placeholder="e.g. Main motherboard replaced, 4mm heat-resistant cable installed"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-[#172033] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Technician Sign-Off / Verifier (Optional)
                   </label>
                   <input
                     type="text"
-                    value={resolutionSignOff}
+                    aria-label="Sign-off" value={resolutionSignOff}
                     onChange={(e) => setResolutionSignOff(e.target.value)}
                     placeholder="e.g. Certified by Senior Electrical Supervisor"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-[#172033] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
@@ -1202,7 +1202,7 @@ export const AdminComplaintDetailPage: React.FC = () => {
                   type="button"
                   onClick={handleAdvanceToResolved}
                   disabled={isSaving || !resolutionSummary.trim()}
-                  className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs disabled:opacity-50 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs shadow-xs disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>
@@ -1216,7 +1216,7 @@ export const AdminComplaintDetailPage: React.FC = () => {
             {complaint.status === 'Resolved' && (
               <div className="space-y-3.5 animate-in fade-in">
                 <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-mintGreen/15 border border-emerald-200 dark:border-mintGreen/40 text-emerald-800 dark:text-mintGreen text-xs space-y-1.5">
-                  <div className="font-bold flex items-center gap-1.5 text-sm">
+                  <div className="font-medium flex items-center gap-1.5 text-sm">
                     <CheckCheck className="w-4 h-4 text-emerald-600 dark:text-mintGreen" />
                     <span>Stage 5 Certified: Complaint Resolved</span>
                   </div>
@@ -1224,7 +1224,7 @@ export const AdminComplaintDetailPage: React.FC = () => {
                     This ticket has completed all 5 stages of the resolution pipeline. Student has been notified in their tracking portal.
                   </p>
                   {complaint.resolved_at && (
-                    <div className="text-[10px] text-emerald-700 dark:text-darkMint font-mono font-bold">
+                    <div className="text-[10px] text-emerald-700 dark:text-darkMint font-mono font-medium">
                       Completed: {new Date(complaint.resolved_at).toLocaleString()}
                     </div>
                   )}
@@ -1233,13 +1233,13 @@ export const AdminComplaintDetailPage: React.FC = () => {
                 {/* EDIT RESOLUTION SUMMARY */}
                 <div className="space-y-2 pt-1">
                   <div className="flex items-center justify-between">
-                    <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                    <label className="text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                       Recorded Resolution Summary
                     </label>
                     <button
                       type="button"
                       onClick={() => setEditingResolution(!editingResolution)}
-                      className="inline-flex items-center gap-1 text-[11px] font-bold text-primaryViolet dark:text-darkCyan hover:underline"
+                      className="inline-flex items-center gap-1 text-[11px] font-medium text-primaryViolet dark:text-darkCyan hover:underline"
                     >
                       <Edit3 className="w-3 h-3" />
                       <span>{editingResolution ? 'Cancel Edit' : 'Edit Resolution Note'}</span>
@@ -1250,23 +1250,23 @@ export const AdminComplaintDetailPage: React.FC = () => {
                     <div className="space-y-2 animate-in fade-in">
                       <textarea
                         rows={3}
-                        value={resolutionSummary}
+                        aria-label="Resolution summary" value={resolutionSummary}
                         onChange={(e) => setResolutionSummary(e.target.value)}
                         placeholder="Update resolution summary..."
-                        className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#0F1530] border border-slate-300 dark:border-white/20 text-xs text-slate-900 dark:text-slate-100 font-medium focus:outline-none focus:border-emerald-500"
+                        className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#1A2029] border border-slate-300 dark:border-white/20 text-xs text-slate-900 dark:text-slate-100 font-medium focus:outline-none focus:border-emerald-500"
                       />
                       <button
                         type="button"
                         onClick={handleUpdateResolutionNote}
                         disabled={isSaving || !resolutionSummary.trim()}
-                        className="w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5"
+                        className="w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs transition-colors flex items-center justify-center gap-1.5"
                       >
                         <Save className="w-3.5 h-3.5" />
                         <span>{actionLoading === 'edit-resolution' ? 'Saving...' : 'Save Updated Resolution Note'}</span>
                       </button>
                     </div>
                   ) : (
-                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-slate-800 dark:text-slate-200 font-medium">
+                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-slate-800 dark:text-slate-200 font-medium">
                       {resolutionSummary || complaint.resolution_notes || 'Motherboard Changed and Fixed'}
                     </div>
                   )}
@@ -1274,21 +1274,21 @@ export const AdminComplaintDetailPage: React.FC = () => {
 
                 {/* OPTIONAL REOPEN */}
                 <div className="pt-2 border-t border-slate-100 dark:border-white/10 space-y-2">
-                  <div className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                  <div className="text-[11px] font-medium text-slate-600 dark:text-slate-400">
                     Need to Reopen Ticket? (If problem recurred)
                   </div>
                   <input
                     type="text"
-                    value={reopenReason}
+                    aria-label="Reason for reopening" value={reopenReason}
                     onChange={(e) => setReopenReason(e.target.value)}
                     placeholder="Reason for reopening (e.g. Sparks recurred after 2 days)"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-[#172033] dark:text-[#F8FAFC] font-medium"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-[#172337] dark:text-[#F8FAFC] font-medium"
                   />
                   <button
                     type="button"
                     onClick={handleReopenComplaint}
                     disabled={isSaving || !reopenReason.trim()}
-                    className="w-full py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5"
+                    className="w-full py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-medium text-xs disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     <span>{actionLoading === 'reopen' ? 'Reopening...' : 'Reopen Complaint'}</span>
@@ -1300,13 +1300,13 @@ export const AdminComplaintDetailPage: React.FC = () => {
             {/* REJECTION OPTION (only available when not resolved) */}
             {complaint.status !== 'Resolved' && complaint.status !== 'Rejected' && (
               <details className="text-xs pt-1 border-t border-slate-100 dark:border-white/10 group">
-                <summary className="font-bold text-rose-600 dark:text-darkCoral cursor-pointer hover:underline py-1">
+                <summary className="font-medium text-rose-600 dark:text-darkCoral cursor-pointer hover:underline py-1">
                   Need to Reject this complaint?
                 </summary>
                 <div className="space-y-2 pt-2 animate-in fade-in">
                   <textarea
                     rows={2}
-                    value={rejectionReason}
+                    aria-label="Reason for rejection" value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
                     placeholder="Enter reason for rejection (e.g. Duplicate ticket, off-campus issue)..."
                     className="w-full px-3 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-500/40 text-xs text-rose-800 dark:text-rose-200 font-medium"
@@ -1315,7 +1315,7 @@ export const AdminComplaintDetailPage: React.FC = () => {
                     type="button"
                     onClick={handleRejectComplaint}
                     disabled={isSaving || !rejectionReason.trim()}
-                    className="w-full py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5"
+                    className="w-full py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5"
                   >
                     <XCircle className="w-3.5 h-3.5" />
                     <span>{actionLoading === 'reject' ? 'Rejecting...' : 'Confirm Rejection'}</span>
@@ -1326,37 +1326,37 @@ export const AdminComplaintDetailPage: React.FC = () => {
           </div>
 
           {/* 2. ASSIGN RESPONSIBLE DIVISION & EDIT DISPATCH NOTE */}
-          <div className="bg-white dark:bg-[#171F3B] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-card-light dark:shadow-card-dark p-6 space-y-3.5">
+          <div className="bg-white dark:bg-[#1A2029] rounded-2xl border border-slate-200/90 dark:border-white/10   p-6 space-y-3.5">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-3">
-              <div className="flex items-center gap-2 text-[#172033] dark:text-[#F8FAFC] font-black text-sm">
+              <div className="flex items-center gap-2 text-[#172337] dark:text-[#F8FAFC] font-medium text-sm">
                 <Building className="w-4 h-4 text-brightBlue dark:text-darkCyan" />
                 <span>Assign Division</span>
               </div>
-              <span className="font-mono text-[10px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded border border-slate-200 dark:border-white/10">
+              <span className="font-mono text-[10px] font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded border border-slate-200 dark:border-white/10">
                 {complaint.assigned_department ? 'Assigned' : 'Unassigned'}
               </span>
             </div>
 
             {/* Current Recorded Value Display */}
             {deptNote && (
-              <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-[11px] text-slate-700 dark:text-slate-300">
-                <span className="font-bold text-[#172033] dark:text-[#F8FAFC]">Current Dispatch Note: </span>
+              <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-[11px] text-slate-700 dark:text-slate-300">
+                <span className="font-medium text-[#172337] dark:text-[#F8FAFC]">Current Dispatch Note: </span>
                 <span className="italic">"{deptNote}"</span>
               </div>
             )}
 
             <div className="space-y-1.5">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                 Facility Department
               </label>
               <select
-                value={assignedDept}
+                aria-label="Assigned department" value={assignedDept}
                 onChange={(e) => setAssignedDept(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-slate-800 dark:text-slate-200 font-bold focus:bg-white dark:focus:bg-[#151D38] focus:outline-none focus:border-primaryViolet"
+                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-slate-800 dark:text-slate-200 font-medium focus:bg-white dark:focus:bg-[#222A35] focus:outline-none focus:border-primaryViolet"
               >
                 <option value="">Select Division</option>
                 {DEPARTMENTS.map((dept) => (
-                  <option key={dept} value={dept} className="bg-white dark:bg-[#171F3B]">
+                  <option key={dept} value={dept} className="bg-white dark:bg-[#1A2029]">
                     {dept}
                   </option>
                 ))}
@@ -1365,18 +1365,18 @@ export const AdminComplaintDetailPage: React.FC = () => {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Dispatch Note / Work Order / Assigned Technician <span className="text-rose-500">*</span>
                 </label>
-                <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wider">Mandatory</span>
+                <span className="text-[10px] font-medium text-rose-500 uppercase tracking-wider">Mandatory</span>
               </div>
               <input
                 type="text"
                 required
-                value={deptNote}
+                aria-label="Department assignment note" value={deptNote}
                 onChange={(e) => setDeptNote(e.target.value)}
                 placeholder="e.g. Work order #204, assigned to technician Ravi (mandatory)"
-                className={`w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#0F1530] border ${!deptNote.trim() ? 'border-amber-300/90 dark:border-amber-500/50' : 'border-slate-200 dark:border-white/10'} text-xs text-[#172033] dark:text-[#F8FAFC] font-medium focus:bg-white dark:focus:bg-[#151D38] focus:outline-none focus:border-brightBlue`}
+                className={`w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2029] border ${!deptNote.trim() ? 'border-amber-300/90 dark:border-amber-500/50' : 'border-slate-200 dark:border-white/10'} text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:bg-white dark:focus:bg-[#222A35] focus:outline-none focus:border-brightBlue`}
               />
               {!deptNote.trim() && (
                 <p className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">
@@ -1389,7 +1389,7 @@ export const AdminComplaintDetailPage: React.FC = () => {
               type="button"
               onClick={handleAssignDepartment}
               disabled={isSaving || !assignedDept || !deptNote.trim()}
-              className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 text-slate-800 dark:text-slate-200 font-bold text-xs border border-slate-200 dark:border-white/10 disabled:opacity-50 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+              className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 text-slate-800 dark:text-slate-200 font-medium text-xs border border-slate-200 dark:border-white/10 disabled:opacity-50 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
             >
               <Building className="w-3.5 h-3.5" />
               <span>
@@ -1407,9 +1407,9 @@ export const AdminComplaintDetailPage: React.FC = () => {
           </div>
 
           {/* 3. HUMAN PRIORITY OVERRIDE & EDIT JUSTIFICATION NOTE */}
-          <div className="bg-white dark:bg-[#171F3B] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-card-light dark:shadow-card-dark p-6 space-y-3.5">
+          <div className="bg-white dark:bg-[#1A2029] rounded-2xl border border-slate-200/90 dark:border-white/10   p-6 space-y-3.5">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-3">
-              <div className="flex items-center gap-2 text-[#172033] dark:text-[#F8FAFC] font-black text-sm">
+              <div className="flex items-center gap-2 text-[#172337] dark:text-[#F8FAFC] font-medium text-sm">
                 <AlertTriangle className="w-4 h-4 text-amber-500 dark:text-darkAmber" />
                 <span>Human Priority Override</span>
               </div>
@@ -1419,14 +1419,14 @@ export const AdminComplaintDetailPage: React.FC = () => {
             {/* Current Recorded Value Display */}
             {priorityReason && (
               <div className="p-2.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/30 text-[11px] text-slate-700 dark:text-slate-300">
-                <span className="font-bold text-amber-800 dark:text-amber-400">Current Justification Note: </span>
+                <span className="font-medium text-amber-800 dark:text-amber-400">Current Justification Note: </span>
                 <span className="italic">"{priorityReason}"</span>
               </div>
             )}
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Priority Level
                 </label>
                 <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
@@ -1434,31 +1434,31 @@ export const AdminComplaintDetailPage: React.FC = () => {
                 </span>
               </div>
               <select
-                value={selectedPriority}
+                aria-label="Priority" value={selectedPriority}
                 onChange={(e) => setSelectedPriority(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-[#172033] dark:text-[#F8FAFC] font-bold focus:bg-white dark:focus:bg-[#151D38] focus:outline-none focus:border-amber-500"
+                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:bg-white dark:focus:bg-[#222A35] focus:outline-none focus:border-amber-500"
               >
-                <option value="Critical" className="bg-white dark:bg-[#171F3B]">Critical</option>
-                <option value="High" className="bg-white dark:bg-[#171F3B]">High</option>
-                <option value="Medium" className="bg-white dark:bg-[#171F3B]">Medium</option>
-                <option value="Low" className="bg-white dark:bg-[#171F3B]">Low</option>
+                <option value="Critical" className="bg-white dark:bg-[#1A2029]">Critical</option>
+                <option value="High" className="bg-white dark:bg-[#1A2029]">High</option>
+                <option value="Medium" className="bg-white dark:bg-[#1A2029]">Medium</option>
+                <option value="Low" className="bg-white dark:bg-[#1A2029]">Low</option>
               </select>
             </div>
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Justification / Review Reason <span className="text-rose-500">*</span>
                 </label>
-                <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wider">Mandatory</span>
+                <span className="text-[10px] font-medium text-rose-500 uppercase tracking-wider">Mandatory</span>
               </div>
               <input
                 type="text"
                 required
-                value={priorityReason}
+                aria-label="Reason for priority change" value={priorityReason}
                 onChange={(e) => setPriorityReason(e.target.value)}
                 placeholder="e.g. Verified safety danger on-site, priority confirmed (mandatory)"
-                className={`w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#0F1530] border ${!priorityReason.trim() ? 'border-amber-300/90 dark:border-amber-500/50' : 'border-slate-200 dark:border-white/10'} text-xs text-[#172033] dark:text-[#F8FAFC] font-medium focus:bg-white dark:focus:bg-[#151D38] focus:outline-none focus:border-amber-500`}
+                className={`w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2029] border ${!priorityReason.trim() ? 'border-amber-300/90 dark:border-amber-500/50' : 'border-slate-200 dark:border-white/10'} text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:bg-white dark:focus:bg-[#222A35] focus:outline-none focus:border-amber-500`}
               />
               {!priorityReason.trim() && (
                 <p className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">
@@ -1471,7 +1471,7 @@ export const AdminComplaintDetailPage: React.FC = () => {
               type="button"
               onClick={handlePriorityOverride}
               disabled={isSaving || !priorityReason.trim()}
-              className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs disabled:opacity-50 transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+              className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-medium text-xs disabled:opacity-50 transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
             >
               <AlertTriangle className="w-3.5 h-3.5" />
               <span>
@@ -1487,28 +1487,28 @@ export const AdminComplaintDetailPage: React.FC = () => {
           </div>
 
           {/* 4. CORRECT AI CATEGORY & EDIT VERIFICATION REASON */}
-          <div className="bg-white dark:bg-[#171F3B] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-card-light dark:shadow-card-dark p-6 space-y-3.5">
+          <div className="bg-white dark:bg-[#1A2029] rounded-2xl border border-slate-200/90 dark:border-white/10   p-6 space-y-3.5">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-3">
-              <div className="flex items-center gap-2 text-[#172033] dark:text-[#F8FAFC] font-black text-sm">
-                <Sparkles className="w-4 h-4 text-primaryViolet dark:text-darkPurple" />
+              <div className="flex items-center gap-2 text-[#172337] dark:text-[#F8FAFC] font-medium text-sm">
+                <ShieldCheck className="w-4 h-4 text-primaryViolet dark:text-darkPurple" />
                 <span>Correct AI Category</span>
               </div>
-              <span className="font-bold text-[10px] bg-violet-100 dark:bg-white/10 text-primaryViolet dark:text-darkPurple px-2 py-0.5 rounded border border-violet-200 dark:border-white/10 truncate max-w-[130px]">
+              <span className="font-medium text-[10px] bg-slate-100 dark:bg-white/10 text-primaryViolet dark:text-darkPurple px-2 py-0.5 rounded border border-slate-200 dark:border-white/10 truncate max-w-[130px]">
                 {complaint.category}
               </span>
             </div>
 
             {/* Current Recorded Value Display */}
             {categoryReason && (
-              <div className="p-2.5 rounded-xl bg-violet-50/70 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800/30 text-[11px] text-slate-700 dark:text-slate-300">
-                <span className="font-bold text-primaryViolet dark:text-darkCyan">Current Category Reason: </span>
+              <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px] text-slate-700 dark:text-slate-300">
+                <span className="font-medium text-primaryViolet dark:text-darkCyan">Current Category Reason: </span>
                 <span className="italic">"{categoryReason}"</span>
               </div>
             )}
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Category
                 </label>
                 <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
@@ -1516,12 +1516,12 @@ export const AdminComplaintDetailPage: React.FC = () => {
                 </span>
               </div>
               <select
-                value={selectedCategory}
+                aria-label="Category" value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0F1530] border border-slate-200 dark:border-white/10 text-xs text-[#172033] dark:text-[#F8FAFC] font-bold focus:bg-white dark:focus:bg-[#151D38] focus:outline-none focus:border-primaryViolet"
+                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:bg-white dark:focus:bg-[#222A35] focus:outline-none focus:border-primaryViolet"
               >
                 {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat} className="bg-white dark:bg-[#171F3B]">
+                  <option key={cat} value={cat} className="bg-white dark:bg-[#1A2029]">
                     {cat}
                   </option>
                 ))}
@@ -1530,21 +1530,21 @@ export const AdminComplaintDetailPage: React.FC = () => {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Correction / Verification Reason <span className="text-rose-500">*</span>
                 </label>
-                <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wider">Mandatory</span>
+                <span className="text-[10px] font-medium text-rose-500 uppercase tracking-wider">Mandatory</span>
               </div>
               <input
                 type="text"
                 required
-                value={categoryReason}
+                aria-label="Reason for category change" value={categoryReason}
                 onChange={(e) => setCategoryReason(e.target.value)}
                 placeholder="e.g. Water leak from AC drain line, reclassified to Water Supply (mandatory)"
-                className={`w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#0F1530] border ${!categoryReason.trim() ? 'border-amber-300/90 dark:border-amber-500/50' : 'border-slate-200 dark:border-white/10'} text-xs text-[#172033] dark:text-[#F8FAFC] font-medium focus:bg-white dark:focus:bg-[#151D38] focus:outline-none focus:border-primaryViolet`}
+                className={`w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2029] border ${!categoryReason.trim() ? 'border-amber-300/90 dark:border-amber-500/50' : 'border-slate-200 dark:border-white/10'} text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:bg-white dark:focus:bg-[#222A35] focus:outline-none focus:border-primaryViolet`}
               />
               {!categoryReason.trim() && (
-                <p className="text-[10px] text-violet-600 dark:text-violet-400 font-medium">
+                <p className="text-[10px] text-blue-700 dark:text-blue-700 font-medium">
                   * Mandatory: Enter a verification or correction reason before committing category.
                 </p>
               )}
@@ -1554,9 +1554,9 @@ export const AdminComplaintDetailPage: React.FC = () => {
               type="button"
               onClick={handleCategoryOverride}
               disabled={isSaving || !categoryReason.trim()}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold text-xs disabled:opacity-50 transition-all shadow-glossy-light dark:shadow-neon-violet/30 cursor-pointer flex items-center justify-center gap-1.5"
+              className="w-full py-2.5 rounded-xl bg-primaryViolet hover:from-violet-700 hover:to-indigo-700 text-white font-medium text-xs disabled:opacity-50 transition-colors   cursor-pointer flex items-center justify-center gap-1.5"
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <ShieldCheck className="w-3.5 h-3.5" />
               <span>
                 {actionLoading === 'category'
                   ? 'Committing...'

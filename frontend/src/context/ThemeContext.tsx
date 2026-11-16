@@ -20,8 +20,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (saved === 'light' || saved === 'dark') {
       return saved;
     }
-    // Default to dark mode for the premium futuristic AI look
-    return 'dark';
+    // Start with a readable light canvas; preserve saved user preferences.
+    return 'light';
   });
 
   const applyThemeToDOM = (newTheme: Theme) => {

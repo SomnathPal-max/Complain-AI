@@ -1,0 +1,57 @@
+:root {
+  --motion-out: cubic-bezier(.16, 1, .3, 1);
+}
+
+.hero-content { animation: none; }
+.hero-line { display: block; overflow: hidden; padding-bottom: .12em; margin-bottom: -.12em; }
+.hero-line > span { display: block; animation: title-reveal 1.15s var(--motion-out) both; animation-delay: .18s; }
+.hero-line:nth-child(2) > span { animation-delay: .36s; }
+.hero-kicker { animation: motion-rise .8s var(--motion-out) .1s both; }
+.hero-bottom { animation: motion-rise .95s var(--motion-out) .65s both; }
+.hero-index { animation: motion-rise .9s var(--motion-out) .85s both; }
+.site-nav-hero { animation: nav-reveal .9s var(--motion-out) both; }
+.hero-photo { animation: hero-drift 14s cubic-bezier(.2,.6,.3,1) both; }
+.hero-scroll .circle-arrow svg { animation: scroll-invitation 2s ease-in-out 1.6s 3; }
+.mobile-site-menu { animation: motion-rise .3s var(--motion-out) both; }
+
+.motion-reveal {
+  opacity: 0;
+  transform: translate3d(0, 32px, 0);
+  transition: opacity .75s var(--motion-out) var(--reveal-delay, 0ms), transform .85s var(--motion-out) var(--reveal-delay, 0ms);
+}
+.motion-reveal.motion-visible { opacity: 1; transform: translate3d(0, 0, 0); }
+.button, .row-action, .circle-arrow { transition: transform .3s var(--motion-out), background .2s ease, color .2s ease, border-color .2s ease; }
+.button svg, .text-link svg, .hero-track svg, .process-list article > svg { transition: transform .35s var(--motion-out); }
+.button:active { transform: scale(.97); }
+.workspace-sidebar nav > a { transition: color .2s ease, background .2s ease, transform .25s var(--motion-out); }
+.sample-tabs button { transition: background .2s ease, color .2s ease, border-color .2s ease, transform .25s var(--motion-out); }
+.example-report { animation: sample-change .45s var(--motion-out) both; }
+.distribution-fill { transform-origin: left; animation: bar-reveal 1s var(--motion-out) both; }
+.ring-fill { animation: ring-reveal 1.2s var(--motion-out) both; transition: stroke-dasharray .8s var(--motion-out); }
+.animated-number { position: relative; }
+
+@media (hover: hover) and (pointer: fine) {
+  .button:hover { transform: translateY(-3px); }
+  .button:hover svg, .text-link:hover svg, .hero-track:hover svg { transform: translate(3px, -2px); }
+  .process-list article:hover > svg { transform: translate(4px, -4px); }
+  .workspace-sidebar nav > a:hover { transform: translateX(3px); }
+  .row-action:hover { transform: translateY(-2px) rotate(8deg); }
+  .hero-scroll:hover .circle-arrow { transform: translateY(5px); }
+  .sample-tabs button:hover { transform: translateY(-2px); }
+  .audience-grid article.motion-visible:hover { transform: translateY(-6px); transition-delay: 0ms; }
+}
+
+@keyframes title-reveal { from { transform: translate3d(0, 112%, 0); opacity: 0; } to { transform: translate3d(0, 0, 0); opacity: 1; } }
+@keyframes motion-rise { from { opacity: 0; transform: translate3d(0, 20px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
+@keyframes nav-reveal { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes hero-drift { from { transform: translate3d(0, var(--hero-parallax, 0px), 0) scale(1.2); } to { transform: translate3d(0, var(--hero-parallax, 0px), 0) scale(1.08); } }
+@keyframes scroll-invitation { 0%, 100% { transform: translateY(-3px); } 50% { transform: translateY(4px); } }
+@keyframes sample-change { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bar-reveal { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes ring-reveal { from { stroke-dasharray: 0 339.3; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-reveal { opacity: 1; transform: none; transition: none; }
+  .hero-photo, .hero-line > span, .hero-kicker, .hero-bottom, .hero-index, .site-nav-hero, .hero-scroll svg, .distribution-fill, .ring-fill, .example-report, .mobile-site-menu { animation: none; transform: none; }
+  .button:hover, .button:active, .button:hover svg, .text-link:hover svg, .hero-track:hover svg, .process-list article:hover > svg, .workspace-sidebar nav > a:hover, .row-action:hover, .hero-scroll:hover .circle-arrow, .sample-tabs button:hover, .audience-grid article.motion-visible:hover { transform: none; }
+}
