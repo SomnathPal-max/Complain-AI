@@ -1,4 +1,4 @@
-# Resolvex-AI
+# ComplainAI
 ### AI-Powered Smart Complaint Classification and Priority Prediction System
 
 > **Product Tagline:** Report Smarter. Prioritise Better. Resolve Faster.  

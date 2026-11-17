@@ -52,7 +52,7 @@ export function HomePage() {
         <img
           className="hero-photo"
           src="/campus.jpg"
-          alt="Tree-lined university campus with historic academic buildings"
+          alt="JIS College of Engineering campus"
           width="2000"
           height="1333"
         />
@@ -172,7 +172,7 @@ export function HomePage() {
             The right action.
           </h2>
           <p>
-            Behind every report is a real problem. ResolveX-AI helps campus teams
+            Behind every report is a real problem. ComplainAI helps campus teams
             understand what it is, how urgent it is, and where to begin.
           </p>
           <div className="demo-principle">

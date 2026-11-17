@@ -62,6 +62,8 @@ class ComplaintCreate(BaseModel):
     affected_count: Optional[int] = Field(None, ge=1, le=10000)
     duration_days: Optional[int] = Field(None, ge=0, le=365)
     user_email: Optional[EmailStr] = None
+    photo_url: Optional[str] = None
+    photo_analysis: Optional[str] = None
 
 class StatusUpdate(BaseModel):
     status: str
@@ -113,6 +115,12 @@ class ComplaintOut(BaseModel):
     status: str
     rejection_reason: Optional[str] = None
     resolution_notes: Optional[str] = None
+    photo_url: Optional[str] = None
+    photo_analysis: Optional[str] = None
+    resolution_photo_url: Optional[str] = None
+    resolution_quality_status: Optional[str] = None
+    resolution_quality_report: Optional[str] = None
+    resolution_quality_score: Optional[int] = None
     created_at: datetime.datetime
     updated_at: datetime.datetime
     resolved_at: Optional[datetime.datetime] = None
@@ -163,6 +171,71 @@ class DuplicateCandidate(BaseModel):
     status: str
     similarity_score: float
     explanation: str
+
+# --- Gemini Multimodal Vision Schemas ---
+
+class PhotoAnalysisRequest(BaseModel):
+    image_base64: str = Field(..., description="Base64 encoded image data or data URI")
+    mime_type: Optional[str] = "image/jpeg"
+    user_notes: Optional[str] = None
+
+class PhotoAnalysisResponse(BaseModel):
+    suggested_title: str
+    simple_report: str
+    suggested_department: str
+    suggested_priority: str
+    is_safety_hazard: bool
+    detected_hazards: List[str]
+    recommended_action: str
+    model_used: str
+
+class WorkVerificationChecklistItem(BaseModel):
+    item: str
+    passed: bool
+    note: str
+
+class WorkVerificationRequest(BaseModel):
+    original_title: str
+    original_description: str
+    resolution_image_base64: str = Field(..., description="Base64 encoded completion photo")
+    mime_type: Optional[str] = "image/jpeg"
+    worker_notes: Optional[str] = None
+
+class WorkVerificationResponse(BaseModel):
+    verdict: str  # PROPERLY_DONE or BADLY_DONE
+    quality_score: int  # 0 to 100
+    verdict_headline: str
+    detailed_report: str
+    checklist: List[WorkVerificationChecklistItem]
+    requires_rework: bool
+    manager_recommendation: str
+    model_used: str
+
+class ResolutionSubmissionRequest(BaseModel):
+    status: str = "Resolved"
+    resolution_notes: str
+    resolution_photo_base64: Optional[str] = None
+    mime_type: Optional[str] = "image/jpeg"
+    run_gemini_verification: bool = True
+
+class ScannedReportRequest(BaseModel):
+    raw_text: str = Field(..., min_length=10, description="Raw OCR or scanned report text")
+    filename: Optional[str] = None
+
+class ScannedReportResponse(BaseModel):
+    extracted_title: str
+    extracted_description: str
+    extracted_location: Optional[str] = None
+    extracted_affected_count: Optional[int] = None
+    predicted_category: str
+    confidence: float
+    critical_rank: str
+    critical_score: int
+    is_acute_emergency: bool
+    detected_hazards: List[str]
+    dispatch_recommendation: str
+    factors: List[PriorityFactorItem]
+    reasoning: str
 
 # --- Analytics Schemas ---
 

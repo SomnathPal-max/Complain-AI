@@ -352,10 +352,10 @@
   height: 100%;
   z-index: -2;
   object-fit: cover;
-  object-position: center 55%;
+  object-position: center 50%;
 }
 .hero-photo {
-  filter: saturate(0.55);
+  filter: saturate(0.8) brightness(0.95);
 }
 .hero-shade {
   z-index: -1;

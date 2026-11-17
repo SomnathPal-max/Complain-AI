@@ -64,35 +64,48 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
       >
         <Brand />
         <span className="sidebar-caption">
-          {adminArea ? 'Campus operations' : 'Student workspace'}
+          {adminArea ? 'Campus operations console' : 'Student workspace'}
         </span>
         <nav aria-label="Workspace navigation">
-          <NavLink to={adminArea ? '/admin' : '/dashboard'} end>
-            <LayoutDashboard />
-            Overview
-          </NavLink>
-          <NavLink to="/submit">
-            <FilePlus2 />
-            New report
-          </NavLink>
-          <NavLink to="/track">
-            <Search />
-            Track a report
-          </NavLink>
-          <NavLink to="/model-eval">
-            <ChartNoAxesCombined />
-            Model evaluation
-          </NavLink>
-          {isAdmin && (
-            <NavLink to={adminArea ? '/dashboard' : '/admin'}>
-              <ShieldCheck />
-              {adminArea ? 'Student dashboard' : 'Admin operations'}
-            </NavLink>
+          {adminArea ? (
+            <>
+              <NavLink to="/admin" end>
+                <LayoutDashboard />
+                Triage & overview
+              </NavLink>
+              <NavLink to="/model-eval">
+                <ChartNoAxesCombined />
+                Model evaluation
+              </NavLink>
+              <NavLink to="/">
+                <House />
+                Back to website
+              </NavLink>
+            </>
+          ) : (
+            <>
+              <NavLink to="/dashboard" end>
+                <LayoutDashboard />
+                My complaints
+              </NavLink>
+              <NavLink to="/submit">
+                <FilePlus2 />
+                New report
+              </NavLink>
+              <NavLink to="/track">
+                <Search />
+                Track a report
+              </NavLink>
+              <NavLink to="/model-eval">
+                <ChartNoAxesCombined />
+                Model evaluation
+              </NavLink>
+              <NavLink to="/">
+                <House />
+                Back to website
+              </NavLink>
+            </>
           )}
-          <NavLink to="/">
-            <House />
-            Back to website
-          </NavLink>
         </nav>
         <div className="sidebar-help">
           <ClipboardList />
@@ -160,7 +173,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
           {children}
         </main>
         <div className="workspace-bottom">
-          <span>ResolveX-AI · Campus care, connected</span>
+          <span>ComplainAI · Campus care, connected</span>
           <span>AI assisted. Human reviewed.</span>
         </div>
       </div>

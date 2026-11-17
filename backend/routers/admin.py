@@ -12,11 +12,13 @@ from backend.schemas import (
     PriorityOverride,
     DepartmentAssign,
     ComplaintRelationOut,
-    DuplicateCandidate
+    DuplicateCandidate,
+    ResolutionSubmissionRequest
 )
 from backend.auth import get_current_admin
 from backend.services.audit import transition_complaint_status
 from backend.services.duplicates import find_potential_duplicates
+from backend.services.gemini_service import gemini_vision_service
 
 router = APIRouter(prefix="/api/admin", tags=["Admin Operations"], dependencies=[Depends(get_current_admin)])
 
@@ -86,6 +88,62 @@ def update_status(
         changed_by=f"Admin ({admin.name})",
         note=payload.note,
         rejection_reason=payload.rejection_reason,
+        resolution_notes=payload.resolution_notes,
+        db=db
+    )
+    return ComplaintOut.model_validate(updated)
+
+@router.post("/complaints/{public_id}/verify-resolution", response_model=ComplaintOut)
+def verify_and_resolve_complaint(
+    public_id: str,
+    payload: ResolutionSubmissionRequest,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin)
+):
+    import base64
+    complaint = db.query(Complaint).filter(Complaint.public_id == public_id.strip().upper()).first()
+    if not complaint:
+        raise HTTPException(status_code=404, detail="Complaint not found")
+
+    gemini_result = None
+    if payload.resolution_photo_base64 and payload.run_gemini_verification:
+        try:
+            clean_str = payload.resolution_photo_base64.strip()
+            mime = payload.mime_type or "image/jpeg"
+            if "," in clean_str and "base64" in clean_str:
+                header, b64data = clean_str.split(",", 1)
+                img_bytes = base64.b64decode(b64data)
+            else:
+                img_bytes = base64.b64decode(clean_str)
+
+            gemini_result = gemini_vision_service.verify_work_completion(
+                original_title=complaint.title,
+                original_description=complaint.description,
+                resolution_image_bytes=img_bytes,
+                mime_type=mime,
+                worker_notes=payload.resolution_notes
+            )
+        except Exception as e:
+            print(f"[Gemini Verification Error] {e}")
+
+    # Update complaint resolution fields
+    complaint.resolution_notes = payload.resolution_notes
+    if payload.resolution_photo_base64:
+        complaint.resolution_photo_url = payload.resolution_photo_base64
+    if gemini_result:
+        complaint.resolution_quality_status = gemini_result.get("verdict", "PROPERLY_DONE")
+        complaint.resolution_quality_report = gemini_result.get("detailed_report", "")
+        complaint.resolution_quality_score = int(gemini_result.get("quality_score", 80))
+
+    note_text = f"Work resolution submitted by Admin/Worker ({admin.name})."
+    if gemini_result:
+        note_text += f" Gemini QA Verdict: {gemini_result.get('verdict')} (Score: {gemini_result.get('quality_score')}/100) - {gemini_result.get('verdict_headline')}."
+
+    updated = transition_complaint_status(
+        complaint=complaint,
+        new_status=payload.status,
+        changed_by=f"Admin ({admin.name})",
+        note=note_text,
         resolution_notes=payload.resolution_notes,
         db=db
     )

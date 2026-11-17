@@ -20,7 +20,7 @@ import {
   FALLBACK_MODEL_INFO
 } from './localFallback';
 
-const DEFAULT_RENDER_BACKEND = 'https://resolvex-ai-backend.onrender.com';
+const DEFAULT_RENDER_BACKEND = 'https://complainai-backend.onrender.com';
 
 const rawBase = (
   import.meta.env.VITE_API_BASE_URL ||
@@ -159,6 +159,8 @@ export const api = {
     affected_count?: number | null;
     duration_days?: number | null;
     user_email?: string | null;
+    photo_url?: string | null;
+    photo_analysis?: string | null;
   }): Promise<Complaint> {
     try {
       return await request<Complaint>('/complaints', {
@@ -233,6 +235,59 @@ export const api = {
       console.warn('Backend unavailable for predictPriority, running client priority calculation engine:', err);
       return fallbackPredictPriority(data);
     }
+  },
+
+  async analyzeScannedReport(raw_text: string, filename?: string): Promise<any> {
+    return await request<any>('/ai/scan-report', {
+      method: 'POST',
+      body: JSON.stringify({ raw_text, filename }),
+    });
+  },
+
+  async analyzeComplaintPhoto(
+    image_base64: string,
+    mime_type: string = 'image/jpeg',
+    user_notes?: string
+  ): Promise<any> {
+    return await request<any>('/ai/analyze-photo', {
+      method: 'POST',
+      body: JSON.stringify({ image_base64, mime_type, user_notes }),
+    });
+  },
+
+  async verifyWorkResolution(
+    original_title: string,
+    original_description: string,
+    resolution_image_base64: string,
+    mime_type: string = 'image/jpeg',
+    worker_notes?: string
+  ): Promise<any> {
+    return await request<any>('/ai/verify-work', {
+      method: 'POST',
+      body: JSON.stringify({
+        original_title,
+        original_description,
+        resolution_image_base64,
+        mime_type,
+        worker_notes,
+      }),
+    });
+  },
+
+  async submitResolutionWithVerification(
+    publicId: string,
+    data: {
+      status?: string;
+      resolution_notes: string;
+      resolution_photo_base64?: string;
+      mime_type?: string;
+      run_gemini_verification?: boolean;
+    }
+  ): Promise<Complaint> {
+    return await request<Complaint>(`/admin/complaints/${publicId}/verify-resolution`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   },
 
   async getModelInfo(): Promise<any> {

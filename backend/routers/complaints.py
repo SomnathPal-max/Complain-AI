@@ -90,6 +90,8 @@ def submit_complaint(
         priority_explanation=priority_explanation,
         assigned_department=payload.assigned_department or None,
         status="Submitted",
+        photo_url=payload.photo_url,
+        photo_analysis=payload.photo_analysis,
         created_at=now,
         updated_at=now
     )

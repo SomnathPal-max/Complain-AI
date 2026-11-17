@@ -17,7 +17,9 @@ import {
   Copy,
   CheckCheck,
   XCircle,
-  Cpu
+  Cpu,
+  Camera,
+  ImageIcon
 } from 'lucide-react';
 import { api } from '../services/api';
 import { useDisplayMode } from '../context/DisplayModeContext';
@@ -275,6 +277,75 @@ export const TrackComplaintPage: React.FC = () => {
                 {complaint.description}
               </div>
             </div>
+
+            {/* Reporter Attached Photo & Gemini Simple Report */}
+            {complaint.photo_url && (
+              <div className="space-y-2 p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
+                    <Camera className="w-4 h-4 text-primaryViolet dark:text-cyan-400" />
+                    <span>Uploaded Issue Photo</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-slate-500">Visual Evidence</span>
+                </div>
+                <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 max-h-60 flex items-center justify-center bg-black/5 dark:bg-black/40">
+                  <img src={complaint.photo_url} alt="Uploaded problem evidence" className="object-contain max-h-60 w-full" />
+                </div>
+                {complaint.photo_analysis && (() => {
+                  try {
+                    const parsed = JSON.parse(complaint.photo_analysis);
+                    return (
+                      <div className="p-3 rounded-xl bg-violet-50/80 dark:bg-[#1E2538] border border-violet-200 dark:border-white/10 text-xs space-y-1">
+                        <div className="font-semibold text-primaryViolet dark:text-cyan-300 flex items-center gap-1">
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>Gemini AI Vision Report:</span>
+                        </div>
+                        <p className="text-slate-700 dark:text-slate-300 text-[11px] leading-relaxed">
+                          {parsed.simple_report || parsed.suggested_title}
+                        </p>
+                      </div>
+                    );
+                  } catch (e) {
+                    return null;
+                  }
+                })()}
+              </div>
+            )}
+
+            {/* Technician Work Completion Photo & Quality Verification */}
+            {complaint.resolution_photo_url && (
+              <div className="space-y-2 p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-500/30">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-800 dark:text-mintGreen">
+                    <CheckCheck className="w-4 h-4 text-emerald-600 dark:text-mintGreen" />
+                    <span>Technician Completed Work Photo</span>
+                  </div>
+                  {complaint.resolution_quality_status && (
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
+                      complaint.resolution_quality_status === 'PROPERLY_DONE'
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-rose-600 text-white'
+                    }`}>
+                      {complaint.resolution_quality_status === 'PROPERLY_DONE' ? '✓ Properly Done' : '✕ Badly Done'}
+                    </span>
+                  )}
+                </div>
+                <div className="rounded-xl overflow-hidden border border-emerald-200 dark:border-white/10 max-h-60 flex items-center justify-center bg-black/5 dark:bg-black/40">
+                  <img src={complaint.resolution_photo_url} alt="Completed work proof" className="object-contain max-h-60 w-full" />
+                </div>
+                {complaint.resolution_quality_report && (
+                  <div className="p-3 rounded-xl bg-white/80 dark:bg-[#1A2029] border border-emerald-200/80 dark:border-white/10 text-xs space-y-1">
+                    <div className="font-semibold text-emerald-800 dark:text-mintGreen flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Gemini QA Inspection:</span>
+                    </div>
+                    <p className="text-slate-700 dark:text-slate-300 text-[11px] leading-relaxed">
+                      {complaint.resolution_quality_report}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* AI Insights Card */}
             <div className="p-6 rounded-2xl bg-[#F2F4F7] dark:bg-[#222A35] border border-slate-200 dark:border-slate-700 space-y-4">

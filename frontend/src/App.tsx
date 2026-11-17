@@ -53,7 +53,7 @@ const ModelEvaluationPage = lazy(async () => ({
 const ProtectedUserRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -63,7 +63,7 @@ const ProtectedUserRoute: React.FC<{ children: React.ReactNode }> = ({
           <ShieldAlert className="w-5 h-5" />
         </div>
         <div className="text-xs font-mono font-bold text-slate-600 dark:text-slate-300">
-          Verifying ResolveX-AI authentication...
+          Verifying ComplainAI authentication...
         </div>
       </div>
     );
@@ -76,11 +76,16 @@ const ProtectedUserRoute: React.FC<{ children: React.ReactNode }> = ({
         state={{
           from: location.pathname + location.search,
           message:
-            'Please sign in or create an account to access ResolveX-AI features.',
+            'Please sign in or create an account to access ComplainAI features.',
         }}
         replace
       />
     );
+  }
+
+  // Strict separation: Administrator cannot access student dashboard
+  if (isAdmin && location.pathname === '/dashboard') {
+    return <Navigate to="/admin" replace />;
   }
 
   return <>{children}</>;

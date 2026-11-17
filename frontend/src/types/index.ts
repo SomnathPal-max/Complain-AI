@@ -37,6 +37,12 @@ export interface Complaint {
   status: 'Submitted' | 'Under Review' | 'Assigned' | 'In Progress' | 'Resolved' | 'Rejected' | 'Reopened';
   rejection_reason?: string | null;
   resolution_notes?: string | null;
+  photo_url?: string | null;
+  photo_analysis?: string | null;
+  resolution_photo_url?: string | null;
+  resolution_quality_status?: 'PROPERLY_DONE' | 'BADLY_DONE' | string | null;
+  resolution_quality_report?: string | null;
+  resolution_quality_score?: number | null;
   created_at: string;
   updated_at: string;
   resolved_at?: string | null;
@@ -76,6 +82,22 @@ export interface DuplicateCandidate {
   status: string;
   similarity_score: number;
   explanation: string;
+}
+
+export interface ScannedReportResult {
+  extracted_title: string;
+  extracted_description: string;
+  extracted_location?: string;
+  extracted_affected_count?: number;
+  predicted_category: string;
+  confidence: number;
+  critical_rank: 'Critical' | 'High' | 'Medium' | 'Low';
+  critical_score: number;
+  is_acute_emergency: boolean;
+  detected_hazards: string[];
+  dispatch_recommendation: string;
+  factors: PriorityFactorItem[];
+  reasoning: string;
 }
 
 export interface AnalyticsSummary {
@@ -129,4 +151,32 @@ export const STATUS_LIST = [
   "Rejected",
   "Reopened"
 ];
+
+export interface PhotoAnalysisResult {
+  suggested_title: string;
+  simple_report: string;
+  suggested_department: string;
+  suggested_priority: 'Critical' | 'High' | 'Medium' | 'Low';
+  is_safety_hazard: boolean;
+  detected_hazards: string[];
+  recommended_action: string;
+  model_used: string;
+}
+
+export interface WorkVerificationChecklistItem {
+  item: string;
+  passed: boolean;
+  note: string;
+}
+
+export interface WorkVerificationResult {
+  verdict: 'PROPERLY_DONE' | 'BADLY_DONE';
+  quality_score: number;
+  verdict_headline: string;
+  detailed_report: string;
+  checklist: WorkVerificationChecklistItem[];
+  requires_rework: boolean;
+  manager_recommendation: string;
+  model_used: string;
+}
 

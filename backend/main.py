@@ -25,6 +25,21 @@ async def lifespan(app: FastAPI):
                 if "firebase_uid" not in columns:
                     conn.execute(text("ALTER TABLE users ADD COLUMN firebase_uid VARCHAR(128)"))
                     conn.commit()
+
+            if "complaints" in inspector.get_table_names():
+                c_cols = [c["name"] for c in inspector.get_columns("complaints")]
+                new_cols = [
+                    ("photo_url", "TEXT"),
+                    ("photo_analysis", "TEXT"),
+                    ("resolution_photo_url", "TEXT"),
+                    ("resolution_quality_status", "VARCHAR(30)"),
+                    ("resolution_quality_report", "TEXT"),
+                    ("resolution_quality_score", "INTEGER")
+                ]
+                for col_name, col_type in new_cols:
+                    if col_name not in c_cols:
+                        conn.execute(text(f"ALTER TABLE complaints ADD COLUMN {col_name} {col_type}"))
+                        conn.commit()
     except Exception as e:
         print(f"[Schema compatibility notice] {e}")
 
@@ -51,9 +66,11 @@ else:
         "http://localhost:3000",
         "http://localhost:5173",
         "http://localhost:8000",
+        "http://localhost:8001",
         "http://127.0.0.1:3000",
         "http://127.0.0.1:5173",
         "http://127.0.0.1:8000",
+        "http://127.0.0.1:8001",
     ]
 
 # Default regex allows all *.vercel.app deployment & preview domains

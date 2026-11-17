@@ -43,6 +43,14 @@ class Complaint(Base):
     assigned_department = Column(String(100), nullable=True)
     status = Column(String(30), default="Submitted", nullable=False, index=True)
     
+    # Visual Evidence & Gemini Multimodal AI
+    photo_url = Column(Text, nullable=True)
+    photo_analysis = Column(Text, nullable=True)
+    resolution_photo_url = Column(Text, nullable=True)
+    resolution_quality_status = Column(String(30), nullable=True)
+    resolution_quality_report = Column(Text, nullable=True)
+    resolution_quality_score = Column(Integer, nullable=True)
+
     # Administrative updates & notes
     rejection_reason = Column(Text, nullable=True)
     resolution_notes = Column(Text, nullable=True)

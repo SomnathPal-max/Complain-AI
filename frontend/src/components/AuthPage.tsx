@@ -105,7 +105,7 @@ export function AuthPage({
       <aside className="auth-story">
         <img
           src="/campus.jpg"
-          alt="University academic building and landscaped campus grounds"
+          alt="JIS College of Engineering campus"
           width="800"
           height="1100"
         />
@@ -302,7 +302,7 @@ export function AuthPage({
         ) : (
           <>
             <p className="auth-switch">
-              {register ? 'Already have an account?' : 'New to ResolveX-AI?'}{' '}
+              {register ? 'Already have an account?' : 'New to ComplainAI?'}{' '}
               <Link to={`${prefix}/${register ? 'login' : 'register'}`}>
                 {register ? 'Sign in' : 'Create an account'}
               </Link>

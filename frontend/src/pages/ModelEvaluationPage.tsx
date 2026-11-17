@@ -216,7 +216,7 @@ export const ModelEvaluationPage: React.FC = () => {
   };
 
   const handleCopySummary = () => {
-    const summary = `ResolveX-AI ML Telemetry Summary:
+    const summary = `ComplainAI ML Telemetry Summary:
 • Model Architecture: TF-IDF (1,2-ngrams, sublinear_tf) + Logistic Regression (C=2.0, class_weight='balanced')
 • Test Set Accuracy: ${(modelInfo?.metrics?.accuracy * 100 || 99).toFixed(1)}%
 • Macro F1-Score: ${(modelInfo?.metrics?.macro_f1 || 0.99).toFixed(3)}
@@ -273,7 +273,7 @@ export const ModelEvaluationPage: React.FC = () => {
             Machine Learning Intelligence & Evaluation Lab
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-4xl leading-relaxed">
-            ResolveX-AI couples a high-speed <strong>TF-IDF vectorizer + Multinomial Logistic Regression</strong> classification model with an audited <strong>Deterministic Urgency Scoring Engine</strong>. Explore live class probabilities, inspect mathematical feature token attribution, test real-life campus scenarios, and review the academic viva defense foundation.
+            ComplainAI couples a high-speed <strong>TF-IDF vectorizer + Multinomial Logistic Regression</strong> classification model with an audited <strong>Deterministic Urgency Scoring Engine</strong>. Explore live class probabilities, inspect mathematical feature token attribution, test real-life campus scenarios, and review the academic viva defense foundation.
           </p>
         </div>
 
@@ -930,7 +930,7 @@ export const ModelEvaluationPage: React.FC = () => {
                 </h4>
                 <p className="leading-relaxed text-slate-600 dark:text-slate-400">
                   When 50 students report the same water leak in Hostel 2, sending 50 separate technicians would paralyze campus facilities.
-                  ResolveX-AI vectorizes new complaints and computes cosine similarity against open tickets in the same facility division. Similar tickets (&gt; 0.50 similarity) are flagged directly in the Admin Console without silent deletion, allowing consolidation into a single master work order.
+                  ComplainAI vectorizes new complaints and computes cosine similarity against open tickets in the same facility division. Similar tickets (&gt; 0.50 similarity) are flagged directly in the Admin Console without silent deletion, allowing consolidation into a single master work order.
                 </p>
               </div>
 

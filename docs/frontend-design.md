@@ -1,4 +1,4 @@
-# ResolveX-AI interface
+# ComplainAI interface
 
 Inspired by the supplied Baseline reference: navy, editorial typography, inset rounded marketing sections, numbered explanations and restrained entrances.
 

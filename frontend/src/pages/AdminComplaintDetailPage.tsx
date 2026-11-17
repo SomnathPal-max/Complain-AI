@@ -30,7 +30,10 @@ import {
   Wrench,
   Timer,
   RotateCcw,
-  Tag
+  Tag,
+  Camera,
+  ImageIcon,
+  Trash2
 } from 'lucide-react';
 import { api } from '../services/api';
 import { useDisplayMode } from '../context/DisplayModeContext';
@@ -40,7 +43,8 @@ import {
   DuplicateCandidate,
   CATEGORIES,
   DEPARTMENTS,
-  STATUS_LIST
+  STATUS_LIST,
+  WorkVerificationResult
 } from '../types';
 import { PriorityBadge } from '../components/PriorityBadge';
 import { StatusBadge } from '../components/StatusBadge';
@@ -134,6 +138,54 @@ export const AdminComplaintDetailPage: React.FC = () => {
   const [reopenReason, setReopenReason] = useState<string>('');
   const [rejectionReason, setRejectionReason] = useState<string>('');
   const [restoreNote, setRestoreNote] = useState<string>('');
+
+  // Gemini Work Verification & Resolution Photo State
+  const [resolutionPhotoBase64, setResolutionPhotoBase64] = useState<string | null>(null);
+  const [resolutionPhotoMime, setResolutionPhotoMime] = useState<string>('image/jpeg');
+  const [verifyingWork, setVerifyingWork] = useState(false);
+  const [workVerificationResult, setWorkVerificationResult] = useState<WorkVerificationResult | null>(null);
+  const [workVerificationError, setWorkVerificationError] = useState<string | null>(null);
+
+  const handleResolutionPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setWorkVerificationError('Please upload a valid image file (JPEG, PNG, WebP).');
+      return;
+    }
+    setWorkVerificationError(null);
+    setResolutionPhotoMime(file.type);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const b64 = event.target?.result as string;
+      setResolutionPhotoBase64(b64);
+      // Auto-trigger Gemini quality assessment
+      handleRunGeminiVerification(b64, file.type);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRunGeminiVerification = async (imgB64?: string, mime?: string) => {
+    const targetImg = imgB64 || resolutionPhotoBase64;
+    if (!targetImg || !complaint) return;
+    setVerifyingWork(true);
+    setWorkVerificationError(null);
+    try {
+      const res = await api.verifyWorkResolution(
+        complaint.title,
+        complaint.description,
+        targetImg,
+        mime || resolutionPhotoMime,
+        resolutionSummary || undefined
+      );
+      setWorkVerificationResult(res);
+    } catch (err: any) {
+      console.warn('Gemini work verification error:', err);
+      setWorkVerificationError(err.message || 'Gemini QA inspection could not be completed.');
+    } finally {
+      setVerifyingWork(false);
+    }
+  };
 
   // In-place editing toggles
   const [editingResolution, setEditingResolution] = useState(false);
@@ -312,11 +364,22 @@ export const AdminComplaintDetailPage: React.FC = () => {
       if (resolutionSignOff.trim()) noteDetails.push(`Sign-off: ${resolutionSignOff.trim()}`);
       const fullResolutionText = noteDetails.join(' | ');
 
-      const updated = await api.updateStatus(complaint.public_id, {
-        status: 'Resolved',
-        resolution_notes: fullResolutionText,
-        note: `Maintenance completed & resolved: ${fullResolutionText}`
-      });
+      let updated: Complaint;
+      if (resolutionPhotoBase64) {
+        updated = await api.submitResolutionWithVerification(complaint.public_id, {
+          status: 'Resolved',
+          resolution_notes: fullResolutionText,
+          resolution_photo_base64: resolutionPhotoBase64,
+          mime_type: resolutionPhotoMime,
+          run_gemini_verification: true
+        });
+      } else {
+        updated = await api.updateStatus(complaint.public_id, {
+          status: 'Resolved',
+          resolution_notes: fullResolutionText,
+          note: `Maintenance completed & resolved: ${fullResolutionText}`
+        });
+      }
       await syncAfterUpdate(updated, "Stage 5 Finalized: Complaint successfully marked as 'Resolved'.");
       setEditingResolution(false);
     } catch (err: any) {
@@ -720,6 +783,75 @@ export const AdminComplaintDetailPage: React.FC = () => {
                 {complaint.description}
               </div>
             </div>
+
+            {/* Visual Evidence (Student Issue Photo) */}
+            {complaint.photo_url && (
+              <div className="space-y-2 p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
+                    <Camera className="w-4 h-4 text-primaryViolet dark:text-cyan-400" />
+                    <span>Reporter Attached Issue Photo</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-slate-500">Visual Evidence</span>
+                </div>
+                <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 max-h-64 flex items-center justify-center bg-black/5 dark:bg-black/40">
+                  <img src={complaint.photo_url} alt="Reported defect" className="object-contain max-h-64 w-full" />
+                </div>
+                {complaint.photo_analysis && (() => {
+                  try {
+                    const parsed = JSON.parse(complaint.photo_analysis);
+                    return (
+                      <div className="p-3 rounded-xl bg-violet-50/80 dark:bg-[#1E2538] border border-violet-200 dark:border-white/10 text-xs space-y-1">
+                        <div className="font-semibold text-primaryViolet dark:text-cyan-300 flex items-center gap-1">
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>Gemini Vision Report:</span>
+                        </div>
+                        <p className="text-slate-700 dark:text-slate-300 text-[11px] leading-relaxed">
+                          {parsed.simple_report || parsed.suggested_title}
+                        </p>
+                      </div>
+                    );
+                  } catch (e) {
+                    return null;
+                  }
+                })()}
+              </div>
+            )}
+
+            {/* Verified Work Resolution Photo (if already resolved) */}
+            {complaint.resolution_photo_url && (
+              <div className="space-y-2 p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-500/30">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-800 dark:text-mintGreen">
+                    <CheckCheck className="w-4 h-4 text-emerald-600 dark:text-mintGreen" />
+                    <span>Technician Work Completion Photo</span>
+                  </div>
+                  {complaint.resolution_quality_status && (
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
+                      complaint.resolution_quality_status === 'PROPERLY_DONE'
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-rose-600 text-white'
+                    }`}>
+                      {complaint.resolution_quality_status === 'PROPERLY_DONE' ? '✓ Properly Done' : '✕ Badly Done'}
+                    </span>
+                  )}
+                </div>
+                <div className="rounded-xl overflow-hidden border border-emerald-200 dark:border-white/10 max-h-64 flex items-center justify-center bg-black/5 dark:bg-black/40">
+                  <img src={complaint.resolution_photo_url} alt="Work resolution" className="object-contain max-h-64 w-full" />
+                </div>
+                {complaint.resolution_quality_report && (
+                  <div className="p-3 rounded-xl bg-white/80 dark:bg-[#1A2029] border border-emerald-200/80 dark:border-white/10 text-xs space-y-1">
+                    <div className="font-semibold text-emerald-800 dark:text-mintGreen flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Gemini QA Audit Report:</span>
+                    </div>
+                    <p className="text-slate-700 dark:text-slate-300 text-[11px] leading-relaxed">
+                      {complaint.resolution_quality_report}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* FIRST SECTION ACTIVE ADMINISTRATIVE TRIAGE & EXECUTION RECORD */}
             <div className="p-5 rounded-2xl bg-[#F2F4F7] dark:bg-[#1A2029] border border-blue-200/80 dark:border-white/10 space-y-3.5 shadow-2xs">
@@ -1196,6 +1328,104 @@ export const AdminComplaintDetailPage: React.FC = () => {
                     placeholder="e.g. Certified by Senior Electrical Supervisor"
                     className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2029] border border-slate-200 dark:border-white/10 text-xs text-[#172337] dark:text-[#F8FAFC] font-medium focus:outline-none focus:border-emerald-500"
                   />
+                </div>
+
+                {/* Worker Completion Photo & Gemini QA Inspection */}
+                <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-white/10">
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <Camera className="w-3.5 h-3.5 text-primaryViolet dark:text-cyan-400" />
+                      <span>Work Completion Photo (Gemini QA Audit)</span>
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-mono">Gemini Vision</span>
+                  </label>
+
+                  {!resolutionPhotoBase64 ? (
+                    <label className="border-2 border-dashed border-slate-300 dark:border-white/15 rounded-xl p-3.5 flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:border-emerald-500 dark:hover:border-cyan-400 transition-colors bg-white/50 dark:bg-black/20 text-center">
+                      <ImageIcon className="w-5 h-5 text-slate-400" />
+                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">Upload Work Photo</span>
+                      <p className="text-[10px] text-slate-400">Gemini will scan and verify if work is PROPERLY or BADLY done.</p>
+                      <input type="file" accept="image/*" onChange={handleResolutionPhotoChange} className="hidden" />
+                    </label>
+                  ) : (
+                    <div className="space-y-2.5">
+                      <div className="relative rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 max-h-48 flex items-center justify-center bg-black/5 dark:bg-black/40">
+                        <img src={resolutionPhotoBase64} alt="Resolution proof" className="object-contain max-h-48 w-full" />
+                        <button
+                          type="button"
+                          onClick={() => { setResolutionPhotoBase64(null); setWorkVerificationResult(null); }}
+                          className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white text-xs"
+                          title="Remove photo"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      {verifyingWork && (
+                        <div className="p-2.5 rounded-xl bg-violet-50 dark:bg-violet-950/40 border border-violet-200 text-xs text-primaryViolet dark:text-cyan-300 flex items-center gap-2">
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin shrink-0" />
+                          <span>Gemini AI is auditing completion photo against original defect...</span>
+                        </div>
+                      )}
+
+                      {workVerificationError && (
+                        <div className="p-2 rounded-lg bg-rose-50 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 text-[11px]">
+                          {workVerificationError}
+                        </div>
+                      )}
+
+                      {workVerificationResult && !verifyingWork && (
+                        <div className={`p-3 rounded-xl border text-xs space-y-2 ${
+                          workVerificationResult.verdict === 'PROPERLY_DONE'
+                            ? 'bg-emerald-50/80 dark:bg-emerald-950/25 border-emerald-200 dark:border-emerald-500/40'
+                            : 'bg-rose-50/80 dark:bg-rose-950/25 border-rose-200 dark:border-rose-500/40'
+                        }`}>
+                          <div className="flex items-center justify-between">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase ${
+                              workVerificationResult.verdict === 'PROPERLY_DONE'
+                                ? 'bg-emerald-600 text-white'
+                                : 'bg-rose-600 text-white'
+                            }`}>
+                              {workVerificationResult.verdict === 'PROPERLY_DONE' ? '✓ Properly Done' : '✕ Badly Done / Incomplete'}
+                            </span>
+                            <span className="font-mono font-bold text-slate-800 dark:text-slate-100 text-[11px]">
+                              QA Score: {workVerificationResult.quality_score}/100
+                            </span>
+                          </div>
+
+                          <div className="font-semibold text-slate-800 dark:text-slate-100 text-[11px]">
+                            {workVerificationResult.verdict_headline}
+                          </div>
+                          <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+                            {workVerificationResult.detailed_report}
+                          </p>
+
+                          {/* Checklist items */}
+                          {workVerificationResult.checklist && (
+                            <div className="space-y-1 pt-1">
+                              {workVerificationResult.checklist.map((c, i) => (
+                                <div key={i} className="flex items-center gap-1.5 text-[10px]">
+                                  <span className={c.passed ? "text-emerald-600 dark:text-mintGreen font-bold" : "text-rose-600 dark:text-rose-400 font-bold"}>
+                                    {c.passed ? "✓" : "✗"}
+                                  </span>
+                                  <span className="font-medium text-slate-700 dark:text-slate-200">{c.item}:</span>
+                                  <span className="text-slate-500 dark:text-slate-400">{c.note}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          <div className={`p-2 rounded-lg text-[10px] font-semibold ${
+                            workVerificationResult.requires_rework
+                              ? 'bg-rose-100 dark:bg-rose-900/40 text-rose-800 dark:text-rose-200'
+                              : 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-200'
+                          }`}>
+                            Recommendation: {workVerificationResult.manager_recommendation}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <button

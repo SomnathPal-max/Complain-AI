@@ -16,13 +16,19 @@ import {
   Cpu,
   CheckCheck,
   Loader2,
-  RefreshCw
+  RefreshCw,
+  FileText,
+  ScanLine,
+  UploadCloud,
+  Camera,
+  ImageIcon,
+  Trash2
 } from 'lucide-react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useComplaints } from '../context/ComplaintsContext';
 import { useDisplayMode } from '../context/DisplayModeContext';
-import { CATEGORIES, DEPARTMENTS, Complaint } from '../types';
+import { CATEGORIES, DEPARTMENTS, Complaint, ScannedReportResult, PhotoAnalysisResult } from '../types';
 import { PriorityBadge } from '../components/PriorityBadge';
 
 const CAMPUS_LOCATIONS = [
@@ -94,6 +100,112 @@ export const SubmitComplaintPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [submittedComplaint, setSubmittedComplaint] = useState<Complaint | null>(null);
   const [copied, setCopied] = useState(false);
+
+  // Scanned Report & Critical Ranking state
+  const [showScanDrawer, setShowScanDrawer] = useState(false);
+  const [scannedText, setScannedText] = useState('');
+  const [analyzingScan, setAnalyzingScan] = useState(false);
+  const [scanResult, setScanResult] = useState<ScannedReportResult | null>(null);
+  const [scanError, setScanError] = useState<string | null>(null);
+
+  const handleAnalyzeScan = async (textToScan?: string) => {
+    const raw = (textToScan || scannedText).trim();
+    if (!raw || raw.length < 10) {
+      setScanError('Please enter at least 10 characters of scanned report text or select a preset.');
+      return;
+    }
+    setScanError(null);
+    setAnalyzingScan(true);
+    try {
+      const res = await api.analyzeScannedReport(raw);
+      setScanResult(res);
+    } catch (err: any) {
+      setScanError(err.message || 'Failed to analyze scanned report.');
+    } finally {
+      setAnalyzingScan(false);
+    }
+  };
+
+  const handleApplyScanToForm = () => {
+    if (!scanResult) return;
+    setTitle(scanResult.extracted_title);
+    setDescription(scanResult.extracted_description);
+    if (scanResult.extracted_location) {
+      setLocation(scanResult.extracted_location);
+    }
+    if (scanResult.extracted_affected_count) {
+      setAffectedCount(String(scanResult.extracted_affected_count));
+    }
+    if (scanResult.predicted_category) {
+      setCategory(scanResult.predicted_category);
+    }
+    setShowScanDrawer(false);
+  };
+
+  // Photo Upload & Gemini Vision Analysis State
+  const [photoBase64, setPhotoBase64] = useState<string | null>(null);
+  const [photoMime, setPhotoMime] = useState<string>('image/jpeg');
+  const [analyzingPhoto, setAnalyzingPhoto] = useState(false);
+  const [photoAnalysis, setPhotoAnalysis] = useState<PhotoAnalysisResult | null>(null);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setPhotoError('Please select a valid image file (JPEG, PNG, WebP).');
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      setPhotoError('Image size exceeds 8MB. Please upload a smaller image.');
+      return;
+    }
+    setPhotoError(null);
+    setPhotoMime(file.type);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const b64 = event.target?.result as string;
+      setPhotoBase64(b64);
+      // Auto-trigger Gemini analysis when image is attached
+      runGeminiPhotoAnalysis(b64, file.type);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const runGeminiPhotoAnalysis = async (imgB64?: string, mime?: string) => {
+    const targetImg = imgB64 || photoBase64;
+    if (!targetImg) return;
+    setAnalyzingPhoto(true);
+    setPhotoError(null);
+    try {
+      const res = await api.analyzeComplaintPhoto(
+        targetImg,
+        mime || photoMime,
+        description || title || undefined
+      );
+      setPhotoAnalysis(res);
+    } catch (err: any) {
+      console.warn('Gemini photo analysis failed:', err);
+      setPhotoError(err.message || 'Gemini Vision could not process the image.');
+    } finally {
+      setAnalyzingPhoto(false);
+    }
+  };
+
+  const handleApplyPhotoAnalysis = () => {
+    if (!photoAnalysis) return;
+    if (!title || title.trim().length < 5) {
+      setTitle(photoAnalysis.suggested_title);
+    }
+    if (!description || description.trim().length < 15) {
+      setDescription(photoAnalysis.simple_report);
+    } else {
+      setDescription(prev => `${prev}\n\n[Visual Report]: ${photoAnalysis.simple_report}`);
+    }
+    if (photoAnalysis.suggested_department) {
+      setCategory(photoAnalysis.suggested_department);
+    }
+  };
 
   const reportError = (msg: string) => {
     setError(msg);
@@ -280,7 +392,9 @@ export const SubmitComplaintPage: React.FC = () => {
         assigned_department: department.trim() ? department.trim() : null,
         affected_count: parsedAffected,
         duration_days: parsedDuration,
-        user_email: effectiveEmail || null
+        user_email: effectiveEmail || null,
+        photo_url: photoBase64 || null,
+        photo_analysis: photoAnalysis ? JSON.stringify(photoAnalysis) : null
       });
 
       // Synchronously update shared complaints cache and state
@@ -455,8 +569,175 @@ export const SubmitComplaintPage: React.FC = () => {
           Report a campus issue
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
-          Describe the problem in plain conversational language. ResolveX-AI automatically determines the category, evaluates priority, and flags duplicates.
+          Describe the problem in plain conversational language. ComplainAI automatically determines the category, evaluates priority, and flags duplicates.
         </p>
+
+        {/* Scanned Report Intake & Critical Ranking Banner */}
+        <div className="mt-4 p-4 rounded-2xl bg-gradient-to-r from-violet-50 to-indigo-50 dark:from-[#1E2538] dark:to-[#171D2D] border border-violet-200 dark:border-violet-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primaryViolet text-white flex items-center justify-center shrink-0 shadow-xs">
+              <ScanLine className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+                Scanned Maintenance Report Intake
+              </h3>
+              <p className="text-[11px] text-slate-600 dark:text-slate-300">
+                Extract text from scanned slips or maintenance inspection logs to instantly rank Critical Priority.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowScanDrawer(!showScanDrawer)}
+            className="px-3.5 py-2 rounded-xl bg-primaryViolet hover:bg-violet-700 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs shrink-0"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>{showScanDrawer ? 'Hide Scanner' : 'Open Report Scanner'}</span>
+          </button>
+        </div>
+
+        {/* Scanned Report Analysis Drawer */}
+        {showScanDrawer && (
+          <div className="mt-4 p-5 rounded-2xl bg-white dark:bg-[#1A2029] border border-violet-200 dark:border-white/10 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <ScanLine className="w-4 h-4 text-primaryViolet dark:text-cyan-400" />
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                  Scanned Document & Incident Slip Text
+                </h4>
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                Supports OCR text, printed incident sheets, and facility logs
+              </div>
+            </div>
+
+            {/* Presets */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                Test Presets:
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  const sample = `INCIDENT REPORT: Science Block B, Lab 104\nLocation: Science Block B - Lab 104\nIssue: Live wire sparking from distribution box with thick black smoke near emergency exit.\nStudents affected: 45\nUrgency: Immediate hazard observed during afternoon laboratory session.`;
+                  setScannedText(sample);
+                  handleAnalyzeScan(sample);
+                }}
+                className="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-500/40 text-[11px] font-medium hover:bg-rose-100 transition-colors cursor-pointer"
+              >
+                ⚡ Live Wire & Smoke (Critical)
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const sample = `CAMPUS HEALTH LOG: Boys Hostel 1\nLocation: Boys Hostel 1 - Wing A\nIssue: Zero water supply and murky brown contaminated water in washroom commodes. Foul sewage smell spreading.\nStudents affected: 120\nDuration: Unresolved for 3 days.`;
+                  setScannedText(sample);
+                  handleAnalyzeScan(sample);
+                }}
+                className="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/40 text-[11px] font-medium hover:bg-amber-100 transition-colors cursor-pointer"
+              >
+                🚰 Water Contamination (High)
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const sample = `FACILITY MEMO: Central Library\nLocation: Central Library - Reading Hall\nIssue: Projector screen loose bracket in discussion cubicle. Slight creaking noise when pulled down.\nStudents affected: 2\nUrgency: Routine maintenance request.`;
+                  setScannedText(sample);
+                  handleAnalyzeScan(sample);
+                }}
+                className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/40 text-[11px] font-medium hover:bg-emerald-100 transition-colors cursor-pointer"
+              >
+                🔧 Minor Bracket Creak (Low)
+              </button>
+            </div>
+
+            <textarea
+              rows={4}
+              value={scannedText}
+              onChange={(e) => setScannedText(e.target.value)}
+              placeholder="Paste raw OCR extracted text or type the contents of the scanned inspection form..."
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-[#151B26] border border-slate-200 dark:border-white/10 text-xs font-mono text-[#172337] dark:text-[#F8FAFC] focus:outline-none focus:border-primaryViolet dark:focus:border-cyan-400 focus:ring-2 focus:ring-violet-200/50"
+            />
+
+            {scanError && (
+              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-500/20 border border-rose-200 text-rose-700 dark:text-rose-300 text-xs font-medium">
+                {scanError}
+              </div>
+            )}
+
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <button
+                type="button"
+                disabled={analyzingScan || !scannedText.trim()}
+                onClick={() => handleAnalyzeScan()}
+                className="px-4 py-2 rounded-xl bg-primaryViolet hover:bg-violet-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer shadow-xs"
+              >
+                {analyzingScan ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                <span>{analyzingScan ? 'Extracting & Ranking...' : 'Analyze & Rank Criticality'}</span>
+              </button>
+            </div>
+
+            {/* Scan Critical Ranking Result Card */}
+            {scanResult && (
+              <div className={`p-4 rounded-xl border space-y-3 ${
+                scanResult.critical_rank === 'Critical'
+                  ? 'bg-rose-50/70 dark:bg-rose-950/20 border-rose-200 dark:border-rose-500/40'
+                  : scanResult.critical_rank === 'High'
+                    ? 'bg-amber-50/70 dark:bg-amber-950/20 border-amber-200 dark:border-amber-500/40'
+                    : 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-500/40'
+              }`}>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-100">
+                      AI Critical Ranking:
+                    </span>
+                    <PriorityBadge priority={scanResult.critical_rank} />
+                    <span className="text-xs font-mono font-bold text-slate-700 dark:text-slate-300">
+                      Score: {scanResult.critical_score}/100
+                    </span>
+                  </div>
+                  <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
+                    Category: <strong className="text-primaryViolet dark:text-cyan-300">{scanResult.predicted_category}</strong> ({(scanResult.confidence * 100).toFixed(1)}%)
+                  </span>
+                </div>
+
+                <div className="text-xs font-medium text-slate-700 dark:text-slate-200 bg-white/70 dark:bg-black/20 p-2.5 rounded-lg border border-slate-200/50 dark:border-white/5">
+                  <div className="font-semibold text-rose-700 dark:text-rose-300 mb-0.5">
+                    {scanResult.dispatch_recommendation}
+                  </div>
+                  <div className="text-[11px] text-slate-600 dark:text-slate-400">
+                    {scanResult.reasoning}
+                  </div>
+                </div>
+
+                {scanResult.detected_hazards && scanResult.detected_hazards.length > 0 && (
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                      Detected Hazard Flags:
+                    </span>
+                    {scanResult.detected_hazards.map((h, i) => (
+                      <span key={i} className="px-2 py-0.5 rounded-md bg-rose-100 dark:bg-rose-500/30 text-rose-800 dark:text-rose-200 font-mono text-[10px] font-semibold">
+                        {h}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex items-center justify-end pt-1">
+                  <button
+                    type="button"
+                    onClick={handleApplyScanToForm}
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                  >
+                    <CheckCheck className="w-3.5 h-3.5" />
+                    <span>Apply Extracted Data to Form</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className={`grid grid-cols-1 lg:grid-cols-12 items-start ${isMobileMode ? 'gap-4' : 'gap-8'}`}>
@@ -507,6 +788,125 @@ export const SubmitComplaintPage: React.FC = () => {
               <span>Mention any immediate danger, disruption, or people affected.</span>
               <span className="font-mono">{description.length} chars</span>
             </div>
+          </div>
+
+          {/* Photo Upload & Gemini AI Vision Analysis */}
+          <div className="space-y-2 p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <label className="text-xs font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <Camera className="w-4 h-4 text-primaryViolet dark:text-cyan-400" />
+                <span>Upload Issue Photo (Gemini AI Vision Analysis)</span>
+              </label>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
+                Powered by Gemini 3.5 & NLP
+              </span>
+            </div>
+
+            {!photoBase64 ? (
+              <label className="border-2 border-dashed border-slate-300 dark:border-white/15 rounded-xl p-5 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primaryViolet dark:hover:border-cyan-400 transition-colors bg-white/50 dark:bg-black/20 text-center">
+                <div className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/40 text-primaryViolet dark:text-cyan-400 flex items-center justify-center">
+                  <ImageIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">Click to upload photo</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400"> or drag and drop</span>
+                </div>
+                <p className="text-[10px] text-slate-400">PNG, JPG, WebP up to 8MB. Gemini will scan and generate a simple report.</p>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </label>
+            ) : (
+              <div className="space-y-3">
+                <div className="relative rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 max-h-56 flex items-center justify-center bg-black/5 dark:bg-black/40">
+                  <img
+                    src={photoBase64}
+                    alt="Issue preview"
+                    className="object-contain max-h-56 w-full rounded-xl"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPhotoBase64(null);
+                      setPhotoAnalysis(null);
+                    }}
+                    className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white text-xs transition-colors"
+                    title="Remove photo"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Gemini Scanning Indicator / Actions */}
+                {analyzingPhoto && (
+                  <div className="flex items-center gap-2 p-3 rounded-xl bg-violet-50 dark:bg-violet-950/40 border border-violet-200 dark:border-violet-500/30 text-xs text-primaryViolet dark:text-cyan-300">
+                    <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                    <span>Gemini AI is scanning your photo and generating a simple language report...</span>
+                  </div>
+                )}
+
+                {photoError && (
+                  <div className="p-2.5 rounded-lg bg-rose-50 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 text-xs">
+                    {photoError}
+                  </div>
+                )}
+
+                {photoAnalysis && !analyzingPhoto && (
+                  <div className="p-3.5 rounded-xl bg-violet-50/80 dark:bg-[#1E2538] border border-violet-200 dark:border-white/10 space-y-2.5">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-1.5">
+                        <Sparkles className="w-4 h-4 text-primaryViolet dark:text-cyan-400" />
+                        <span className="text-xs font-bold text-slate-800 dark:text-slate-100">
+                          Gemini Vision Inspection Report
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-violet-200/70 dark:bg-violet-900/50 text-violet-800 dark:text-violet-200">
+                        {photoAnalysis.model_used}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-sans bg-white/70 dark:bg-black/30 p-2.5 rounded-lg border border-slate-200/50 dark:border-white/5">
+                      {photoAnalysis.simple_report}
+                    </p>
+
+                    <div className="flex items-center gap-2 flex-wrap text-[11px]">
+                      <span className="text-slate-600 dark:text-slate-400">Department: <strong className="text-primaryViolet dark:text-cyan-300">{photoAnalysis.suggested_department}</strong></span>
+                      <span className="text-slate-400">·</span>
+                      <span className="text-slate-600 dark:text-slate-400">Severity: <strong className="text-rose-600 dark:text-rose-400">{photoAnalysis.suggested_priority}</strong></span>
+                      {photoAnalysis.is_safety_hazard && (
+                        <span className="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-500/30 text-rose-700 dark:text-rose-300 font-bold text-[10px]">
+                          Hazard Detected
+                        </span>
+                      )}
+                    </div>
+
+                    {photoAnalysis.detected_hazards?.length > 0 && (
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {photoAnalysis.detected_hazards.map((h, i) => (
+                          <span key={i} className="px-2 py-0.5 rounded bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 text-rose-700 dark:text-rose-300 text-[10px] font-medium">
+                            {h}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="flex justify-end pt-1">
+                      <button
+                        type="button"
+                        onClick={handleApplyPhotoAnalysis}
+                        className="px-3.5 py-1.5 rounded-xl bg-primaryViolet hover:bg-violet-700 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                      >
+                        <CheckCheck className="w-3.5 h-3.5" />
+                        <span>Apply AI Report to Form</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Location */}
@@ -574,7 +974,7 @@ export const SubmitComplaintPage: React.FC = () => {
                   {isAutoPredicting && (
                     <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-primaryViolet dark:text-darkCyan ">
                       <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
-                      <span className="font-semibold text-[11px]">Analyzing text with ResolveX-AI ML model...</span>
+                      <span className="font-semibold text-[11px]">Analyzing text with ComplainAI ML model...</span>
                     </div>
                   )}
 
@@ -646,7 +1046,7 @@ export const SubmitComplaintPage: React.FC = () => {
                   {!isAutoPredicting && !autoPredictedCategory && !autoPredictError && (
                     <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
                       <ShieldCheck className="w-3.5 h-3.5 text-primaryViolet dark:text-darkPurple shrink-0" />
-                      <span>ResolveX-AI will auto-classify once title (≥5 chars) & description (≥15 chars) are entered.</span>
+                      <span>ComplainAI will auto-classify once title (≥5 chars) & description (≥15 chars) are entered.</span>
                     </div>
                   )}
                 </>
@@ -877,7 +1277,7 @@ export const SubmitComplaintPage: React.FC = () => {
               <span>People make the final call</span>
             </div>
             <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
-              ResolveX-AI outputs are advisory recommendations. Authorized campus administrators review and triage each ticket before technician dispatch.
+              ComplainAI outputs are advisory recommendations. Authorized campus administrators review and triage each ticket before technician dispatch.
             </p>
           </div>
         </div>
