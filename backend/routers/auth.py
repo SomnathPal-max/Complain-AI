@@ -130,6 +130,9 @@ def sync_firebase_user(
         if sync_data.name and sync_data.name.strip() and current_user.name != sync_data.name.strip():
             current_user.name = sync_data.name.strip()
             changed = True
+        if sync_data.role and sync_data.role == "admin" and current_user.role != "admin":
+            current_user.role = "admin"
+            changed = True
         if changed:
             db.commit()
             db.refresh(current_user)

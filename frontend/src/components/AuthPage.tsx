@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { mapFirebaseError } from '../services/firebase';
+import { FirebaseStatusBadge } from './FirebaseStatusBadge';
 export function AuthPage({
   admin = false,
   register = false,
@@ -163,6 +164,9 @@ export function AuthPage({
               ? 'Create an account to report, track, and follow through.'
               : 'Sign in to pick up where you left off.'}
         </p>
+        <div style={{ marginBottom: '1rem' }}>
+          <FirebaseStatusBadge />
+        </div>
         {state?.message && !error && (
           <div className="auth-notice">{state.message}</div>
         )}
@@ -307,25 +311,35 @@ export function AuthPage({
                 {register ? 'Sign in' : 'Create an account'}
               </Link>
             </p>
-            {!admin && auth.isFirebaseActive && (
-              <button
-                className="button button-outline auth-google"
-                disabled={Boolean(busy)}
-                onClick={() =>
-                  void run(async () => {
-                    await auth.loginWithGoogle();
-                    finish();
-                  }, 'google')
-                }
-              >
-                {busy === 'google' ? (
-                  <Loader2 className="spin" />
-                ) : (
-                  <span aria-hidden="true">G</span>
-                )}
-                Continue with Google
-              </button>
-            )}
+            <button
+              className="button button-outline auth-google"
+              type="button"
+              disabled={Boolean(busy)}
+              onClick={() =>
+                void run(async () => {
+                  const asRole = admin ? 'admin' : 'user';
+                  const u = await auth.loginWithGoogle(asRole, department.trim() || undefined);
+                  if (admin && u.role !== 'admin') {
+                    auth.logout();
+                    throw new Error(
+                      'This Google account does not have administrator privileges. Please register as an administrator or use student sign in.'
+                    );
+                  }
+                  finish();
+                }, 'google')
+              }
+            >
+              {busy === 'google' ? (
+                <Loader2 className="spin" />
+              ) : (
+                <span aria-hidden="true" style={{ fontWeight: 800 }}>G</span>
+              )}
+              {admin
+                ? register
+                  ? 'Register as Admin with Google'
+                  : 'Sign in as Admin with Google'
+                : 'Continue with Google'}
+            </button>
             <div className="auth-demo">
               <span>Just looking around?</span>
               <button

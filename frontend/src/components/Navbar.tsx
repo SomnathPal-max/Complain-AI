@@ -4,6 +4,7 @@ import { ArrowUpRight, Menu, Moon, Sun, X } from 'lucide-react';
 import { Brand } from './Brand';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { FirebaseStatusBadge } from './FirebaseStatusBadge';
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
@@ -28,6 +29,7 @@ export function Navbar() {
         <NavLink to="/model-eval">Our approach</NavLink>
       </nav>
       <div className="nav-actions">
+        <FirebaseStatusBadge compact />
         <button
           className="icon-button"
           onClick={toggleTheme}

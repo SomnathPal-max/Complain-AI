@@ -142,10 +142,10 @@ export const api = {
     return request<User>('/auth/me');
   },
 
-  async syncUser(name?: string, email?: string): Promise<User> {
+  async syncUser(name?: string, email?: string, role?: string, department?: string): Promise<User> {
     return request<User>('/auth/sync', {
       method: 'POST',
-      body: JSON.stringify({ name, email }),
+      body: JSON.stringify({ name, email, role, department }),
     });
   },
 

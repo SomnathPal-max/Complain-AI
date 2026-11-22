@@ -20,6 +20,7 @@ import {
   getCachedUser,
   setCachedUser
 } from '../services/localFallback';
+import { FirebaseConfigModal } from '../components/FirebaseConfigModal';
 
 interface AuthContextType {
   user: User | null;
@@ -27,10 +28,12 @@ interface AuthContextType {
   token: string | null;
   loading: boolean;
   isFirebaseActive: boolean;
+  showFirebaseModal: boolean;
+  setShowFirebaseModal: (show: boolean) => void;
   login: (email: string, pass: string) => Promise<User>;
   register: (name: string, email: string, pass: string) => Promise<User>;
   registerAdmin: (name: string, email: string, pass: string) => Promise<User>;
-  loginWithGoogle: () => Promise<User>;
+  loginWithGoogle: (asRole?: 'user' | 'admin', department?: string) => Promise<User>;
   resetPassword: (email: string) => Promise<void>;
   sendVerificationEmail: () => Promise<void>;
   loginDemo: (role: 'admin' | 'student') => Promise<User>;
@@ -53,6 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY) || localStorage.getItem(LEGACY_TOKEN_KEY));
   const [loading, setLoading] = useState(true);
+  const [showFirebaseModal, setShowFirebaseModal] = useState(false);
 
   const isFirebaseActive = isFirebaseConfigured() && Boolean(auth);
 
@@ -366,26 +370,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const loginWithGoogle = async (): Promise<User> => {
+  const loginWithGoogle = async (asRole: 'user' | 'admin' = 'user', department?: string): Promise<User> => {
     if (!isFirebaseActive) {
-      throw new Error('Google Sign-In requires Firebase configuration. Please configure VITE_FIREBASE_* environment variables in your deployment.');
+      setShowFirebaseModal(true);
+      throw new Error('Google Sign-In requires active Firebase credentials. Click "Save & Activate" in the configuration modal to connect.');
     }
     const fbUser = await fbLoginGoogle();
     const idToken = await fbUser.getIdToken();
     localStorage.setItem(TOKEN_KEY, idToken);
     setToken(idToken);
     setFirebaseUser(fbUser);
+
+    const targetName = department ? `${fbUser.displayName || 'Administrator'} (${department})` : (fbUser.displayName || undefined);
+    const targetRole = asRole === 'admin' ? 'admin' : (isEmailAdmin(fbUser.email) ? 'admin' : 'user');
+
     try {
-      const dbUser = await api.syncUser(fbUser.displayName || undefined, fbUser.email || undefined);
+      const dbUser = await api.syncUser(targetName, fbUser.email || undefined, targetRole, department);
       setUser(dbUser);
       setCachedUser(dbUser);
       return dbUser;
     } catch (err) {
+      console.warn('Backend sync during loginWithGoogle fallback:', err);
       const fallbackUser: User = {
         id: 1,
-        name: fbUser.displayName || 'Google User',
+        name: targetName || fbUser.displayName || 'Google User',
         email: fbUser.email || '',
-        role: isEmailAdmin(fbUser.email) ? 'admin' : 'user',
+        role: targetRole,
         is_active: true,
         created_at: new Date().toISOString(),
         firebase_uid: fbUser.uid
@@ -466,6 +476,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         token,
         loading,
         isFirebaseActive,
+        showFirebaseModal,
+        setShowFirebaseModal,
         login,
         register,
         registerAdmin,
@@ -478,6 +490,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }}
     >
       {children}
+      <FirebaseConfigModal
+        isOpen={showFirebaseModal}
+        onClose={() => setShowFirebaseModal(false)}
+      />
     </AuthContext.Provider>
   );
 };

@@ -5,8 +5,14 @@ import base64
 from pathlib import Path
 from typing import Dict, Any, Optional, List
 from dotenv import load_dotenv
-from google import genai
-from google.genai import types
+try:
+    from google import genai
+    from google.genai import types
+    _GENAI_AVAILABLE = True
+except ImportError:
+    genai = None
+    types = None
+    _GENAI_AVAILABLE = False
 
 # Load local environment variables from .env
 _env_path = Path(__file__).resolve().parent.parent.parent / ".env"
@@ -16,7 +22,9 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
 
 PREF_MODELS = ["gemini-3.5-flash-lite", "gemini-3.8-flash"]
 
-def get_client() -> genai.Client:
+def get_client():
+    if not _GENAI_AVAILABLE:
+        raise RuntimeError("google-genai package is not installed.")
     api_key = os.getenv("GEMINI_API_KEY", GEMINI_API_KEY).strip()
     return genai.Client(api_key=api_key)
 

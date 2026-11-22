@@ -27,6 +27,8 @@ class UserOut(UserBase):
 class FirebaseSyncRequest(BaseModel):
     name: Optional[str] = None
     email: Optional[EmailStr] = None
+    role: Optional[str] = None
+    department: Optional[str] = None
 
 class Token(BaseModel):
     access_token: str

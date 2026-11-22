@@ -15,24 +15,97 @@ import {
   browserLocalPersistence
 } from 'firebase/auth';
 
-// Vite environment variables for Firebase Client SDK
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || ''
+export interface FirebaseRuntimeConfig {
+  apiKey: string;
+  authDomain: string;
+  projectId: string;
+  storageBucket?: string;
+  messagingSenderId?: string;
+  appId?: string;
+  measurementId?: string;
+}
+
+const RUNTIME_CONFIG_KEY = 'complainai_firebase_config';
+
+/**
+ * Retrieve saved runtime Firebase configuration from localStorage.
+ */
+export const getStoredFirebaseConfig = (): FirebaseRuntimeConfig | null => {
+  try {
+    const raw = localStorage.getItem(RUNTIME_CONFIG_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.apiKey && parsed.projectId) {
+        return parsed;
+      }
+    }
+  } catch (err) {
+    console.warn('Failed to parse localStorage firebase config', err);
+  }
+  return null;
 };
 
-// Check if valid Firebase configuration is provided
+/**
+ * Returns active configuration and its origin source.
+ */
+export const getActiveFirebaseConfig = (): {
+  config: FirebaseRuntimeConfig;
+  source: 'env' | 'custom' | 'none';
+} => {
+  const custom = getStoredFirebaseConfig();
+  if (custom && custom.apiKey && custom.projectId) {
+    return { config: custom, source: 'custom' };
+  }
+
+  const envConfig: FirebaseRuntimeConfig = {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
+    appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || ''
+  };
+
+  if (envConfig.apiKey && envConfig.projectId) {
+    return { config: envConfig, source: 'env' };
+  }
+
+  return { config: envConfig, source: 'none' };
+};
+
+/**
+ * Check if a valid Firebase configuration is active.
+ */
 export const isFirebaseConfigured = (): boolean => {
-  return Boolean(
-    firebaseConfig.apiKey &&
-    firebaseConfig.authDomain &&
-    firebaseConfig.projectId
-  );
+  const { config } = getActiveFirebaseConfig();
+  return Boolean(config.apiKey && config.projectId);
+};
+
+/**
+ * Save user-entered Firebase configuration into localStorage and reload application.
+ */
+export const saveRuntimeFirebaseConfig = (cfg: Partial<FirebaseRuntimeConfig>) => {
+  const projectId = (cfg.projectId || '').trim();
+  const clean: FirebaseRuntimeConfig = {
+    apiKey: (cfg.apiKey || '').trim(),
+    authDomain: (cfg.authDomain || '').trim() || (projectId ? `${projectId}.firebaseapp.com` : ''),
+    projectId: projectId,
+    storageBucket: (cfg.storageBucket || '').trim() || (projectId ? `${projectId}.appspot.com` : ''),
+    messagingSenderId: (cfg.messagingSenderId || '').trim(),
+    appId: (cfg.appId || '').trim(),
+    measurementId: (cfg.measurementId || '').trim()
+  };
+  localStorage.setItem(RUNTIME_CONFIG_KEY, JSON.stringify(clean));
+  window.location.reload();
+};
+
+/**
+ * Reset runtime Firebase configuration back to environment variables.
+ */
+export const clearRuntimeFirebaseConfig = () => {
+  localStorage.removeItem(RUNTIME_CONFIG_KEY);
+  window.location.reload();
 };
 
 // Initialize Firebase App safely (singleton)
@@ -40,9 +113,11 @@ let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
 let googleProvider: GoogleAuthProvider | null = null;
 
+const { config: activeConfig, source: activeSource } = getActiveFirebaseConfig();
+
 if (isFirebaseConfigured()) {
   try {
-    app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+    app = getApps().length > 0 ? getApp() : initializeApp(activeConfig);
     auth = getAuth(app);
     // Set local persistence
     setPersistence(auth, browserLocalPersistence).catch((err) => {
@@ -50,16 +125,17 @@ if (isFirebaseConfigured()) {
     });
     googleProvider = new GoogleAuthProvider();
     googleProvider.setCustomParameters({ prompt: 'select_account' });
+    console.info(`[ComplainAI] Firebase initialized successfully via source: ${activeSource} (Project: ${activeConfig.projectId})`);
   } catch (err) {
     console.error('Failed to initialize Firebase SDK:', err);
   }
 } else {
   console.info(
-    'Firebase environment variables (VITE_FIREBASE_*) not set. Application will run in demonstration mode.'
+    '[ComplainAI] Firebase environment variables not set. Running in demo/local mode. Click Firebase status pill to connect.'
   );
 }
 
-export { auth, googleProvider };
+export { app, auth, googleProvider };
 
 /**
  * Maps Firebase Auth error codes into clean, user-friendly messages.
@@ -95,6 +171,10 @@ export const mapFirebaseError = (error: any): string => {
       return 'Too many failed login attempts. Access is temporarily disabled. Please reset your password or try again later.';
     case 'auth/requires-recent-login':
       return 'This operation is sensitive and requires recent authentication. Please sign in again.';
+    case 'auth/operation-not-allowed':
+      return 'This sign-in provider is not enabled in your Firebase Console. Please enable Email/Password or Google in Authentication -> Sign-in method.';
+    case 'auth/unauthorized-domain':
+      return 'This domain is not authorized for OAuth operations in your Firebase project. Add localhost or your Vercel domain in Firebase Console -> Authentication -> Settings -> Authorized domains.';
     default:
       if (message.includes('auth/')) {
         return message.replace(/^Firebase:\s*/, '');
@@ -112,7 +192,7 @@ export const registerWithEmail = async (
   pass: string
 ): Promise<FirebaseUser> => {
   if (!auth) {
-    throw new Error('Firebase Authentication is not configured. Please supply VITE_FIREBASE_* environment variables in your Vercel Project Settings.');
+    throw new Error('Firebase Authentication is not configured. Please supply VITE_FIREBASE_* environment variables or click the Firebase setup button.');
   }
 
   const credential = await createUserWithEmailAndPassword(auth, email.trim(), pass);
@@ -124,7 +204,6 @@ export const registerWithEmail = async (
     }
   }
 
-  // Optionally send email verification
   try {
     await sendEmailVerification(credential.user);
   } catch (err) {
@@ -142,7 +221,7 @@ export const loginWithEmail = async (
   pass: string
 ): Promise<FirebaseUser> => {
   if (!auth) {
-    throw new Error('Firebase Authentication is not configured. Please supply VITE_FIREBASE_* environment variables in your Vercel Project Settings.');
+    throw new Error('Firebase Authentication is not configured. Please supply VITE_FIREBASE_* environment variables or click the Firebase setup button.');
   }
   const credential = await signInWithEmailAndPassword(auth, email.trim(), pass);
   return credential.user;
@@ -153,7 +232,7 @@ export const loginWithEmail = async (
  */
 export const loginWithGoogle = async (): Promise<FirebaseUser> => {
   if (!auth || !googleProvider) {
-    throw new Error('Firebase Authentication is not configured. Please supply VITE_FIREBASE_* environment variables in your Vercel Project Settings.');
+    throw new Error('Firebase Authentication is not configured. Please supply VITE_FIREBASE_* environment variables or click the Firebase setup button.');
   }
   const credential = await signInWithPopup(auth, googleProvider);
   return credential.user;
@@ -164,7 +243,7 @@ export const loginWithGoogle = async (): Promise<FirebaseUser> => {
  */
 export const requestPasswordReset = async (email: string): Promise<void> => {
   if (!auth) {
-    throw new Error('Firebase Authentication is not configured. Please supply VITE_FIREBASE_* environment variables in your Vercel Project Settings.');
+    throw new Error('Firebase Authentication is not configured. Please supply VITE_FIREBASE_* environment variables or click the Firebase setup button.');
   }
   await sendPasswordResetEmail(auth, email.trim());
 };
@@ -197,4 +276,3 @@ export const getFirebaseIdToken = async (forceRefresh = false): Promise<string |
     return null;
   }
 };
-

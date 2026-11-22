@@ -70,3 +70,23 @@ def test_firebase_admin_privileges_mocked():
         assert res.status_code == 200
         data = res.json()
         assert "items" in data or "complaints" in data
+
+def test_firebase_admin_role_sync():
+    fake_token = "mock-firebase-token-admin-upgrade"
+    mock_decoded = {
+        "uid": "fb_supervisor_test_54321",
+        "email": "supervisor@college.edu",
+        "name": "Electrical Supervisor",
+        "admin": False
+    }
+
+    with patch("backend.auth.verify_firebase_token", return_value=mock_decoded):
+        headers = {"Authorization": f"Bearer {fake_token}"}
+        res = client.post("/api/auth/sync", json={
+            "name": "Electrical Supervisor (Electrical Division)",
+            "role": "admin"
+        }, headers=headers)
+        assert res.status_code == 200
+        data = res.json()
+        assert data["role"] == "admin"
+        assert "Electrical Supervisor" in data["name"]
